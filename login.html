@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - MNNIT Reporter</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific styles for the toggle form */
+        .auth-box { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .toggle-btns { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+        .toggle-btn { flex: 1; padding: 10px; border: none; background: none; font-weight: bold; cursor: pointer; color: gray; }
+        .toggle-btn.active { color: #3182ce; border-bottom: 2px solid #3182ce; }
+        .hidden { display: none; }
+        select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>🔐 Authentication</h2>
+        <a href="index.html" style="color:white; text-decoration:none;">Back to Home</a>
+    </header>
+
+    <div class="auth-box">
+        <div class="toggle-btns">
+            <button class="toggle-btn active" onclick="showLogin()">Login</button>
+            <button class="toggle-btn" onclick="showSignup()">Sign Up</button>
+        </div>
+
+        <div id="login-form">
+            <h3>Welcome Back</h3>
+            <select id="login-role">
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+            </select>
+            <input type="text" id="login-email" placeholder="Email / ID">
+            <input type="password" id="login-pass" placeholder="Password">
+            <button class="btn-primary" onclick="handleLogin()">Login</button>
+        </div>
+
+        <div id="signup-form" class="hidden">
+            <h3>Create Account</h3>
+            <select id="signup-role">
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+            </select>
+            <input type="text" id="signup-email" placeholder="Email / ID">
+            <input type="password" id="signup-pass" placeholder="Create Password">
+            <button class="btn-primary" onclick="handleSignup()" style="background-color: #2f855a;">Register</button>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        // Toggle Logic
+        function showLogin() {
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-form').classList.add('hidden');
+            document.querySelectorAll('.toggle-btn')[0].classList.add('active');
+            document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
+        }
+        function showSignup() {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-form').classList.remove('hidden');
+            document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
+            document.querySelectorAll('.toggle-btn')[1].classList.add('active');
+        }
+
+        // Action Logic
+        async function handleSignup() {
+            const role = document.getElementById('signup-role').value;
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-pass').value;
+
+            if(!email || !pass) return alert("Fill all fields");
+
+            const res = await registerUser(email, pass, role);
+            if(res.success) {
+                alert("Registration Successful! Please Login.");
+                showLogin();
+            } else {
+                alert(res.message);
+            }
+        }
+
+        async function handleLogin() {
+            const role = document.getElementById('login-role').value;
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+
+            const res = await loginUser(email, pass, role);
+            
+            if(res.success) {
+                // Redirect based on role
+                if(role === 'student') window.location.href = 'student.html';
+                else window.location.href = 'admin.html';
+            } else {
+                alert(res.message);
+            }
+        }
+    </script>
+</body>
+</html>

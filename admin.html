@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - MNNIT Reporter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <h2>👮‍♂️ Administration</h2>
+        </div>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </header>
+
+    <div class="container">
+        
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span id="count-total" class="stat-number">0</span>
+                Total Issues
+            </div>
+            <div class="stat-box">
+                <span id="count-pending" class="stat-number" style="color:#e53e3e">0</span>
+                Pending
+            </div>
+            <div class="stat-box">
+                <span id="count-resolved" class="stat-number" style="color:#38a169">0</span>
+                Resolved
+            </div>
+        </div>
+
+        <h3>Incoming Issues Feed</h3>
+        <div id="admin-list"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

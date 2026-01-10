@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNNIT Civic Reporter - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific styles for the Landing Page */
+        
+        .hero {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .live-ticker {
+            background: #fff;
+            padding: 15px;
+            margin: -30px auto 20px auto;
+            max-width: 800px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .ticker-item strong {
+            display: block;
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        
+        .ticker-item span {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <h2>🏛️ MNNIT Problem Solver</h2>
+        </div>
+        <a href="login.html">
+            <button class="btn-primary" style="width:auto; padding: 8px 20px;">Login / Sign Up</button>
+        </a>
+    </header>
+
+    <div class="hero">
+        <h1>Make MNNIT Better.</h1>
+        <p>Spot an issue? Report it instantly. Track the resolution in real-time and help administration maintain our campus.</p>
+        
+        <a href="login.html">
+            <button class="btn-primary" style="background: white; color: #2c3e50; font-size: 1.1rem; padding: 12px 30px; font-weight: bold;">
+                🚀 Get Started
+            </button>
+        </a>
+    </div>
+
+    <div class="live-ticker">
+        <div class="ticker-item">
+            <strong id="stat-reports">124</strong>
+            <span>Issues Reported</span>
+        </div>
+        <div class="ticker-item">
+            <strong id="stat-resolved" style="color: #27ae60;">98</strong>
+            <span>Resolved</span>
+        </div>
+        <div class="ticker-item">
+            <strong id="stat-users">450</strong>
+            <span>Active Students</span>
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3>📸 Snap & Report</h3>
+            <p>Take a photo of the issue (broken fan, water leak) and upload it in seconds.</p>
+        </div>
+        <div class="feature-card">
+            <h3>🔍 Real-time Tracking</h3>
+            <p>See exactly when the admin views your report and when it gets fixed.</p>
+        </div>
+        <div class="feature-card">
+            <h3>✅ Proof of Resolution</h3>
+            <p>Admins upload "After" photos so you can verify the work is actually done.</p>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; color: gray; font-size: 0.8rem; margin-top: 50px;">
+        &copy; 2025 MNNIT DevJam Team. Built for Campus.
+    </footer>
+
+    <script>
+        // Simple animation to make the numbers count up when page loads
+        function animateValue(id, start, end, duration) {
+            let obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Run animation on load
+        document.addEventListener("DOMContentLoaded", () => {
+            animateValue("stat-reports", 0, 124, 2000);
+            animateValue("stat-resolved", 0, 98, 2500);
+            animateValue("stat-users", 0, 450, 1500);
+        });
+    </script>
+</body>
+</html>
