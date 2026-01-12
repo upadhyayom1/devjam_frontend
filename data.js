@@ -48,15 +48,33 @@ function logout() {
     window.location.href = 'index.html';
 }
 
+// In data.js
+
 function checkAuth(requiredRole) {
-    const user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
-    if (!user || user.role !== requiredRole) {
-        alert("Access Denied! Please Login.");
-        window.location.href = 'login.html'; // Redirect to login
+    // 1. Try to get the user
+    const data = localStorage.getItem('mnnit_current_user');
+    
+    // DEBUG LOGS (Press F12 to see these)
+    console.log("Checking Auth...");
+    console.log("Required Role:", requiredRole);
+    console.log("Found Data:", data);
+
+    if (!data) {
+        alert("Security Check Failed: No user data found. Please Log in again.");
+        window.location.href = 'login.html';
+        return null;
     }
+
+    const user = JSON.parse(data);
+
+    if (user.role !== requiredRole) {
+        alert(`Security Check Failed: You are a '${user.role}' but this page is for '${requiredRole}'.`);
+        window.location.href = 'login.html';
+        return null;
+    }
+
     return user;
 }
-
 // ===========================
 // 2. ISSUES LOGIC (Unchanged)
 // ===========================

@@ -3,153 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MNNIT Civic Reporter - Home</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MNNIT Civic Reporter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Specific styles for the Landing Page */
+        /* === RESET & VARIABLES === */
+        :root {
+            --primary: #2563eb;       /* Modern Blue */
+            --dark: #1e293b;          /* Dark Slate */
+            --light: #f8fafc;         /* Off-white */
+            --accent: #10b981;        /* Success Green */
+            --shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+        }
+           
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
-        .hero {
-            background: linear-gradient(135deg, #2c3e50, #4ca1af);
-            color: white;
-            padding: 80px 20px;
-            text-align: center;
-        }
+        /* Smooth Scroll Effect */
+        html { scroll-behavior: smooth; }
 
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
+        body { background-color: var(--light); color: var(--dark); overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
 
-        .hero p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 30px auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            text-align: center;
-        }
-
-        .live-ticker {
-            background: #fff;
-            padding: 15px;
-            margin: -30px auto 20px auto;
-            max-width: 800px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        /* === NAVBAR === */
+       /* === NAVBAR === */
+        nav {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             align-items: center;
+            padding: 20px 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+        
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: #64748b;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover { color: var(--primary); }
+
+        /* --- NEW ANIMATED BUTTON STARTS HERE --- */
+        
+        /* 1. The Pulse Animation */
+        @keyframes softPulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        /* 2. The Button Styling */
+        .nav-btn {
+            padding: 10px 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            animation: softPulse 2s infinite; /* Keeps it pulsing */
+            transition: all 0.3s ease;
+        }
+
+        /* 3. The Hover Effect (Red) */
+        .nav-btn:hover { 
+            animation: none; /* Stops pulsing on hover */
+            transform: scale(1.1); 
+            background: #ef4444; /* Turns Red */
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+        }
+
+        /* === HERO SECTION === */
+       .hero {
             position: relative;
+            height: 90vh; /* Full screen height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            overflow: hidden; 
+            color: white; /* Force text white */
+        }
+        .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures video fills screen without stretching */
+            z-index: -2;
+            transform: scale(1.05); /* Slight zoom to avoid white edges */
+        }
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Gradient for that premium look */
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+            z-index: -1;
+        }
+
+      .hero h1 {
+            color: white;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.6); /* Shadow makes text pop */
+            background: none; /* Remove old gradient */
+            -webkit-text-fill-color: white;
+            
+            /* Keep your animation settings here */
+            opacity: 0;
+            animation: textReveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+            animation-delay: 0.2s;
+        }
+.hero p {
+            color: #f1f5f9;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+            
+            /* Keep your animation settings here */
+            opacity: 0;
+            animation: textReveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+            animation-delay: 0.5s;
+        }
+.cta-btn {
+            display: inline-block; /* Fixes animation jitter */
+            padding: 16px 40px;
+            font-size: 1.1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+            
+            /* Animation Config */
+            opacity: 0; /* Start hidden */
+            animation: textReveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+            animation-delay: 1.2s; /* Appears last */
+        }
+        .cta-btn:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4); 
+        }
+
+        /* === LIVE TICKER === */
+        .ticker-container {
+            margin-top: -50px;
+            display: flex;
+            justify-content: center;
+            padding: 0 20px;
+            animation: fadeInUp 1.4s ease-out;
+            position: relative; /* For z-index */
             z-index: 10;
         }
 
-        .ticker-item strong {
-            display: block;
-            font-size: 1.5rem;
-            color: #2c3e50;
+        .ticker {
+            background: white;
+            padding: 30px 60px;
+            border-radius: 20px;
+            display: flex;
+            gap: 60px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .stat-item { text-align: center; }
+        .stat-num { font-size: 2.5rem; font-weight: 800; color: var(--dark); display: block; }
+        .stat-label { color: #64748b; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        /* === FEATURES SECTION === */
+        .features { padding: 100px 10%; background: white; }
+        .section-title { text-align: center; margin-bottom: 60px; font-size: 2rem; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            padding: 40px;
+            background: var(--light);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .feature-card:hover {
+            background: white;
+            box-shadow: var(--shadow);
+            transform: translateY(-5px);
+            border-color: #e2e8f0;
+        }
+
+        .icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+        .feature-card h3 { margin-bottom: 10px; }
+        .feature-card p { color: #64748b; line-height: 1.6; }
+
+        /* === FOOTER / CONTACT === */
+        .footer-section {
+            background: #1e293b;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
         }
         
-        .ticker-item span {
-            color: #7f8c8d;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+        }
+
+        .contact-item { font-size: 1.1rem; }
+        .contact-item span { color: #94a3b8; display: block; font-size: 0.9rem; margin-bottom: 5px; }
+
+       /* === NEW ANIMATIONS === */
+        
+        /* The "Blur Reveal" Keyframe */
+        @keyframes textReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(40px); /* Starts lower down */
+                filter: blur(15px); /* Starts very blurry */
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0); /* Slides to original spot */
+                filter: blur(0); /* Becomes sharp */
+            }
+        }
+        
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .ticker { flex-direction: column; gap: 20px; width: 90%; padding: 20px; }
+            .nav-actions { gap: 15px; }
+            .nav-link { display: none; } /* Hide text links on very small screens if needed */
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <h2>🏛️ MNNIT Problem Solver</h2>
-        </div>
-        <a href="login.html">
-            <button class="btn-primary" style="width:auto; padding: 8px 20px;">Login / Sign Up</button>
-        </a>
-    </header>
-
-    <div class="hero">
-        <h1>Make MNNIT Better.</h1>
-        <p>Spot an issue? Report it instantly. Track the resolution in real-time and help administration maintain our campus.</p>
+    <nav>
+        <div class="logo">🏛️ MNNIT Reporter</div>
         
-        <a href="login.html">
-            <button class="btn-primary" style="background: white; color: #2c3e50; font-size: 1.1rem; padding: 12px 30px; font-weight: bold;">
-                🚀 Get Started
-            </button>
-        </a>
+        <div class="nav-actions">
+            <a href="#about-section" class="nav-link">About Us</a>
+            
+            <a href="#contact-section" class="nav-link">Contact Us</a>
+            
+            <a href="login.html" class="nav-btn">Login / Sign Up</a>
+        </div>
+    </nav>
+
+   <section class="hero">
+        <video autoplay muted loop playsinline class="video-bg" id="heroVideo">
+            <source src="video.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+
+        <div class="video-overlay"></div>
+
+        <h1>Transform MNNIT,<br>One Report at a Time.</h1>
+        <p>A student-led initiative to streamline campus maintenance. Spot it, Snap it, Solved.</p>
+        <a href="login.html" class="cta-btn">🚀 Start Reporting Issues</a>
+    </section>
+
+    <div id="about-section" class="ticker-container" style="padding-top: 100px; margin-top: -100px;"> 
+        <div class="ticker">
+            <div class="stat-item">
+                <span class="stat-num" id="stat-issues">0</span>
+                <span class="stat-label">Issues Reported</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num" style="color:var(--accent)" id="stat-resolved">0</span>
+                <span class="stat-label">Resolved</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num" style="color:var(--primary)" id="stat-users">0</span>
+                <span class="stat-label">Active Students</span>
+            </div>
+        </div>
     </div>
 
-    <div class="live-ticker">
-        <div class="ticker-item">
-            <strong id="stat-reports">124</strong>
-            <span>Issues Reported</span>
+    <section class="features">
+        <h2 class="section-title">How It Works</h2>
+        <div class="grid">
+            <div class="feature-card">
+                <span class="icon">📸</span>
+                <h3>Snap & Upload</h3>
+                <p>Found a broken fan or a water leak? Just take a photo and upload it. No forms, no office visits.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">⚡</span>
+                <h3>Instant Admin Alerts</h3>
+                <p>Your report is instantly forwarded to the MNNIT maintenance dashboard for quick action.</p>
+            </div>
+            <div class="feature-card">
+                <span class="icon">✅</span>
+                <h3>Visual Proof</h3>
+                <p>Transparency is key. Admins upload "After" photos so you can verify the fix yourself.</p>
+            </div>
         </div>
-        <div class="ticker-item">
-            <strong id="stat-resolved" style="color: #27ae60;">98</strong>
-            <span>Resolved</span>
-        </div>
-        <div class="ticker-item">
-            <strong id="stat-users">450</strong>
-            <span>Active Students</span>
-        </div>
-    </div>
+    </section>
 
-    <div class="features-grid">
-        <div class="feature-card">
-            <h3>📸 Snap & Report</h3>
-            <p>Take a photo of the issue (broken fan, water leak) and upload it in seconds.</p>
+    <footer id="contact-section" class="footer-section">
+        <h2 style="margin-bottom: 10px;">Get in Touch</h2>
+        <p style="color:#94a3b8;">Have questions? Reach out to the MNNIT Administration.</p>
+        
+        <div class="contact-info">
+            <div class="contact-item">
+                <span>Helpline Number</span>
+                📞 +91 98765 43210
+            </div>
+            <div class="contact-item">
+                <span>Official Email</span>
+                ✉️ admin@mnnit.ac.in
+            </div>
         </div>
-        <div class="feature-card">
-            <h3>🔍 Real-time Tracking</h3>
-            <p>See exactly when the admin views your report and when it gets fixed.</p>
-        </div>
-        <div class="feature-card">
-            <h3>✅ Proof of Resolution</h3>
-            <p>Admins upload "After" photos so you can verify the work is actually done.</p>
-        </div>
-    </div>
 
-    <footer style="text-align: center; padding: 20px; color: gray; font-size: 0.8rem; margin-top: 50px;">
-        &copy; 2025 MNNIT DevJam Team. Built for Campus.
+        <div style="border-top: 1px solid #334155; padding-top: 20px; font-size: 0.8rem; color: #64748b;">
+            &copy; 2025 MNNIT DevJam Team. Built for Impact.
+        </div>
     </footer>
 
     <script>
-        // Simple animation to make the numbers count up when page loads
-        function animateValue(id, start, end, duration) {
+        // Smooth Counter Animation
+        function animateCounter(id, target, duration) {
             let obj = document.getElementById(id);
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                obj.innerHTML = Math.floor(progress * (end - start) + start);
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
+            let start = 0;
+            let increment = target / (duration / 16); // 60fps
+            
+            let timer = setInterval(() => {
+                start += increment;
+                obj.textContent = Math.floor(start);
+                if (start >= target) {
+                    obj.textContent = target;
+                    clearInterval(timer);
                 }
-            };
-            window.requestAnimationFrame(step);
+            }, 16);
         }
 
-        // Run animation on load
-        document.addEventListener("DOMContentLoaded", () => {
-            animateValue("stat-reports", 0, 124, 2000);
-            animateValue("stat-resolved", 0, 98, 2500);
-            animateValue("stat-users", 0, 450, 1500);
+        // Run when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            animateCounter("stat-issues", 142, 2000);
+            animateCounter("stat-resolved", 115, 2500);
+            animateCounter("stat-users", 850, 1500);
+
+        });
+        // Slow Motion Video Effect
+        document.addEventListener("DOMContentLoaded", function() {
+            const video = document.getElementById('heroVideo');
+            if(video) {
+                video.playbackRate = 0.5; // Plays at 50% speed (Cinematic feel)
+            }
         });
     </script>
+
 </body>
 </html>

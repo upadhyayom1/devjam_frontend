@@ -3,39 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - MNNIT Reporter</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Admin Dashboard - MNNIT Reporter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === DASHBOARD LAYOUT STYLES === */
+        :root {
+            --sidebar-width: 260px;
+            --header-height: 70px;
+            --primary: #2563eb;
+            --bg-light: #f3f4f6;
+            --text-dark: #1f2937;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background-color: var(--bg-light); color: var(--text-dark); display: flex; height: 100vh; overflow: hidden; }
+
+        /* === 1. SIDEBAR (Left Dashboard) === */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #1e293b; /* Dark Blue-Grey */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #60a5fa;
+        }
+
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* Stats in Sidebar (Mini Dashboard) */
+        .mini-stats {
+            margin-top: auto; /* Pushes to bottom */
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .mini-stat-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
+        .stat-val { font-weight: bold; }
+
+        /* === 2. MAIN AREA === */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Scrollable content */
+        }
+
+        /* === 3. TOP HEADER (Profile Section) === */
+        header {
+            height: var(--header-height);
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .page-title { font-size: 1.2rem; font-weight: 600; }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .admin-info { text-align: right; }
+        .admin-name { font-weight: 600; font-size: 0.95rem; display: block; color: var(--primary); }
+        .admin-role { font-size: 0.75rem; color: #6b7280; display: block; }
+
+        .avatar {
+            width: 40px; height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Dropdown Logic */
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            width: 150px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none; /* Hidden by default */
+        }
+        .dropdown-menu.show { display: block; }
+        .dropdown-item {
+            padding: 10px 15px;
+            display: block;
+            color: #ef4444;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .dropdown-item:hover { background: #fef2f2; }
+
+        /* === CONTENT GRID === */
+        .content-container { padding: 30px; }
+
+        .issue-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 20px;
+            border-left: 5px solid #fbbf24; /* Yellow for Pending */
+            transition: transform 0.2s;
+        }
+        .issue-card:hover { transform: translateY(-2px); }
+        .issue-card.resolved { border-left-color: #10b981; opacity: 0.8; } /* Green for Resolved */
+
+        .issue-img {
+            width: 120px; height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #eee;
+            border: 1px solid #e2e8f0;
+        }
+
+        .issue-details { flex: 1; }
+        .issue-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
+        .badge-pending { background: #fef3c7; color: #d97706; }
+        .badge-resolved { background: #d1fae5; color: #059669; }
+
+        .btn-action {
+            background: #2563eb; color: white; border: none;
+            padding: 8px 16px; border-radius: 6px; cursor: pointer;
+            font-size: 0.9rem; margin-top: 10px;
+        }
+        .btn-action:hover { background: #1d4ed8; }
+        
+        .hidden { display: none; }
+    </style>
 </head>
 <body>
-    <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <h2>👮‍♂️ Administration</h2>
-        </div>
-        <button class="btn-logout" onclick="logout()">Logout</button>
-    </header>
 
-    <div class="container">
+    <aside class="sidebar">
+        <div class="brand">🛡️ MNNIT Admin</div>
         
-        <div class="stats-grid">
-            <div class="stat-box">
-                <span id="count-total" class="stat-number">0</span>
-                Total Issues
-            </div>
-            <div class="stat-box">
-                <span id="count-pending" class="stat-number" style="color:#e53e3e">0</span>
-                Pending
-            </div>
-            <div class="stat-box">
-                <span id="count-resolved" class="stat-number" style="color:#38a169">0</span>
-                Resolved
-            </div>
+        <div class="menu-label">Main Menu</div>
+        
+        <div class="nav-item active" onclick="switchView('pending', this)">
+            <span>⏳</span> Pending Issues
+        </div>
+        <div class="nav-item" onclick="switchView('resolved', this)">
+            <span>✅</span> Resolved History
         </div>
 
-        <h3>Incoming Issues Feed</h3>
-        <div id="admin-list"></div>
-    </div>
+        <div class="mini-stats">
+            <div class="menu-label" style="color:#cbd5e1;">Quick Stats</div>
+            <div class="mini-stat-row">
+                <span>Total:</span> <span class="stat-val" id="sb-total">0</span>
+            </div>
+            <div class="mini-stat-row">
+                <span style="color:#fbbf24">Pending:</span> <span class="stat-val" id="sb-pending">0</span>
+            </div>
+            <div class="mini-stat-row">
+                <span style="color:#4ade80">Resolved:</span> <span class="stat-val" id="sb-resolved">0</span>
+            </div>
+        </div>
+    </aside>
 
-    <script src="data.js"></script>
-    <script src="admin.js"></script>
+    <main class="main-content">
+        
+        <header>
+            <div class="page-title" id="page-title">⚠️ Pending Issues Queue</div>
+            
+            <div class="profile-section" onclick="toggleProfile()">
+                <div class="admin-info">
+                    <span class="admin-name" id="admin-name-display">Loading...</span>
+                    <span class="admin-role">System Admin</span>
+                </div>
+                <div class="avatar">A</div>
+                
+                <div class="dropdown-menu" id="profile-dropdown">
+                    <div class="dropdown-item" onclick="handleLogout()">🚪 Logout</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <div id="admin-list">
+                <p style="color:#999; text-align:center; margin-top:50px;">Loading issues...</p>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        // Added 'getDoc' and 'doc' to imports
+        import { getFirestore, collection, getDocs, updateDoc, doc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_HB6QXbdv5z6zKXIkU18nw7k9NFOmZ5s",
+            authDomain: "mnnit-devjam.firebaseapp.com",
+            projectId: "mnnit-devjam",
+            storageBucket: "mnnit-devjam.firebasestorage.app",
+            messagingSenderId: "860519154056",
+            appId: "1:860519154056:web:1f848fba6723b04419fa3d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DATA STORE
+        let allIssues = [];
+
+        // === 1. INITIALIZE & FETCH PROFILE ===
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check Auth from Session Storage
+            const session = JSON.parse(localStorage.getItem('mnnit_current_user'));
+            
+            // Redirect if not admin
+            if (!session || session.role !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // A. Set temporary name from email (Fallback)
+            const nameDisplay = document.getElementById('admin-name-display');
+            nameDisplay.innerText = session.email.split('@')[0]; 
+
+            // B. FETCH REAL NAME FROM DATABASE
+            try {
+                // We use the UID stored in the session to find the right document
+                const docRef = doc(db, "users", session.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    // If 'fullName' exists in DB, use it.
+                    if(data.fullName) {
+                        nameDisplay.innerText = data.fullName;
+                    }
+                }
+            } catch (error) {
+                console.error("Could not fetch admin name:", error);
+            }
+
+            // Fetch Issues Data
+            await fetchIssues();
+        });
+
+        // === 2. FETCH ISSUES DATA ===
+        async function fetchIssues() {
+            const listDiv = document.getElementById('admin-list');
+            
+            try {
+                // Fetch ALL issues
+                const q = query(collection(db, "issues"));
+                const querySnapshot = await getDocs(q);
+                
+                allIssues = [];
+                querySnapshot.forEach((doc) => {
+                    allIssues.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Update Stats Sidebar
+                updateStats();
+
+                // Default View: PENDING
+                renderIssues('pending');
+
+            } catch (error) {
+                console.error("Error:", error);
+                listDiv.innerHTML = `<p style="color:red; text-align:center;">Error loading data.</p>`;
+            }
+        }
+
+        // === 3. RENDER LOGIC ===
+        window.renderIssues = function(filterType) {
+            const listDiv = document.getElementById('admin-list');
+            listDiv.innerHTML = ""; // Clear list
+
+            // Filter the master list
+            const filteredData = allIssues.filter(item => {
+                if(filterType === 'pending') return item.status === 'Pending';
+                if(filterType === 'resolved') return item.status === 'Resolved';
+                return true;
+            });
+
+            if(filteredData.length === 0) {
+                listDiv.innerHTML = `<div style="text-align:center; color:#999; margin-top:50px;">
+                    <h3>No ${filterType} issues found.</h3>
+                </div>`;
+                return;
+            }
+
+            // Create Cards
+            filteredData.forEach(issue => {
+                const card = document.createElement('div');
+                card.className = `issue-card ${issue.status.toLowerCase()}`;
+                
+                // Show "Mark Resolved" button only for pending issues
+                const actionBtn = issue.status === 'Pending' 
+                    ? `<button class="btn-action" onclick="markResolved('${issue.id}')">✅ Mark as Resolved</button>` 
+                    : `<span style="color:green; font-weight:bold; font-size:0.9rem;">Resolved on ${new Date().toLocaleDateString()}</span>`;
+
+                card.innerHTML = `
+                    <img src="${issue.imageUrl || 'https://via.placeholder.com/150'}" class="issue-img">
+                    <div class="issue-details">
+                        <div class="issue-header">
+                            <h3 style="margin:0;">${issue.category || 'General Issue'}</h3>
+                            <span class="badge badge-${issue.status.toLowerCase()}">${issue.status}</span>
+                        </div>
+                        <p style="color:#555; margin-bottom:5px;">${issue.description}</p>
+                        <small style="color:#888;">Reported by: ${issue.studentName || 'Student'} • ${issue.location || 'Campus'}</small>
+                        <div style="margin-top:10px;">${actionBtn}</div>
+                    </div>
+                `;
+                listDiv.appendChild(card);
+            });
+        };
+
+        // === 4. UPDATE STATS SIDEBAR ===
+        function updateStats() {
+            const total = allIssues.length;
+            const pending = allIssues.filter(i => i.status === 'Pending').length;
+            const resolved = allIssues.filter(i => i.status === 'Resolved').length;
+
+            document.getElementById('sb-total').innerText = total;
+            document.getElementById('sb-pending').innerText = pending;
+            document.getElementById('sb-resolved').innerText = resolved;
+        }
+
+        // === 5. ACTIONS ===
+        window.markResolved = async function(docId) {
+            if(!confirm("Are you sure this issue is fixed?")) return;
+
+            try {
+                const issueRef = doc(db, "issues", docId);
+                await updateDoc(issueRef, { status: "Resolved" });
+                
+                // Refresh Data locally
+                const issueIndex = allIssues.findIndex(i => i.id === docId);
+                if(issueIndex > -1) allIssues[issueIndex].status = "Resolved";
+                
+                // Re-render current view (Item will vanish from pending)
+                renderIssues('pending');
+                updateStats();
+                
+                alert("Issue marked as Resolved!");
+            } catch (error) {
+                alert("Error updating: " + error.message);
+            }
+        }
+
+        // View Switcher (Sidebar Clicks)
+        window.switchView = function(view, element) {
+            // Update Title
+            const titles = { 'pending': '⚠️ Pending Issues Queue', 'resolved': '✅ Past Resolution History' };
+            document.getElementById('page-title').innerText = titles[view];
+
+            // Update Active Class
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            // Render
+            renderIssues(view);
+        }
+
+        // Profile Toggle
+        window.toggleProfile = function() {
+            document.getElementById('profile-dropdown').classList.toggle('show');
+        }
+
+        // Logout
+        window.handleLogout = async function() {
+            await signOut(auth);
+            localStorage.removeItem('mnnit_current_user');
+            window.location.href = 'login.html';
+        }
+
+        // Make functions global for HTML buttons
+        window.markResolved = markResolved;
+        window.switchView = switchView;
+        window.toggleProfile = toggleProfile;
+        window.handleLogout = handleLogout;
+    </script>
+
 </body>
 </html>

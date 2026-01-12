@@ -2,99 +2,322 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login - MNNIT Reporter</title>
-    <link rel="stylesheet" href="style.css">
+    <title>MNNIT Reporter - Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Specific styles for the toggle form */
-        .auth-box { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .toggle-btns { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
-        .toggle-btn { flex: 1; padding: 10px; border: none; background: none; font-weight: bold; cursor: pointer; color: gray; }
-        .toggle-btn.active { color: #3182ce; border-bottom: 2px solid #3182ce; }
+        /* === MODERN STYLING === */
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 420px; text-align: center; position: relative; overflow: hidden; }
+        
+        h2 { margin-top: 0; color: #1f2937; }
+        p { color: #6b7280; font-size: 0.9rem; margin-bottom: 25px; }
+
+        input { width: 100%; padding: 12px 15px; margin-bottom: 12px; border: 1px solid #e5e7eb; border-radius: 8px; box-sizing: border-box; font-size: 0.95rem; transition: 0.2s; }
+        input:focus { border-color: #2563eb; outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        input:disabled { background-color: #f3f4f6; color: #6b7280; cursor: not-allowed; }
+
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .btn-primary { background: #2563eb; color: white; }
+        .btn-primary:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .btn-google { display: flex; align-items: center; justify-content: center; gap: 10px; background: white; border: 1px solid #d1d5db; color: #374151; margin-top: 15px; }
+        .btn-google:hover { background: #f3f4f6; }
+
+        /* ROLE CARDS */
+        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .role-card { border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px 10px; cursor: pointer; transition: 0.2s; }
+        .role-card:hover { border-color: #2563eb; background: #eff6ff; }
+        .role-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+        .role-title { font-weight: 600; color: #374151; }
+
+        /* TABS */
+        .tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 10px; cursor: pointer; color: #6b7280; font-weight: 500; border-bottom: 2px solid transparent; }
+        .tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
         .hidden { display: none; }
-        select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .error-msg { color: #ef4444; font-size: 0.85rem; margin-bottom: 10px; text-align: left; display: none; }
+        .back-btn { background: none; border: none; color: #6b7280; font-size: 0.9rem; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
-    <header>
-        <h2>🔐 Authentication</h2>
-        <a href="index.html" style="color:white; text-decoration:none;">Back to Home</a>
-    </header>
 
-    <div class="auth-box">
-        <div class="toggle-btns">
-            <button class="toggle-btn active" onclick="showLogin()">Login</button>
-            <button class="toggle-btn" onclick="showSignup()">Sign Up</button>
+    <div class="auth-card">
+        
+        <div id="screen-selection">
+            <h2>Welcome Back</h2>
+            <p>Please select your role to continue</p>
+            <div class="role-grid">
+                <div class="role-card" onclick="selectRole('student')">
+                    <span class="role-icon">🎓</span>
+                    <span class="role-title">Student</span>
+                </div>
+                <div class="role-card" onclick="selectRole('admin')">
+                    <span class="role-icon">👮‍♂️</span>
+                    <span class="role-title">Admin</span>
+                </div>
+            </div>
         </div>
 
-        <div id="login-form">
-            <h3>Welcome Back</h3>
-            <select id="login-role">
-                <option value="student">Student</option>
-                <option value="admin">Admin</option>
-            </select>
-            <input type="text" id="login-email" placeholder="Email / ID">
-            <input type="password" id="login-pass" placeholder="Password">
-            <button class="btn-primary" onclick="handleLogin()">Login</button>
+        <div id="screen-admin" class="hidden">
+            <button class="back-btn" onclick="goBack()">< Back</button>
+            <h2>Admin Login</h2>
+            <p>Authorized personnel only</p>
+            <input type="email" id="admin-email" placeholder="Admin Email">
+            <input type="password" id="admin-pass" placeholder="Password">
+            <div id="admin-error" class="error-msg"></div>
+            <button class="btn btn-primary" onclick="handleAdminLogin()">Secure Login</button>
         </div>
 
-        <div id="signup-form" class="hidden">
-            <h3>Create Account</h3>
-            <select id="signup-role">
-                <option value="student">Student</option>
-                <option value="admin">Admin</option>
-            </select>
-            <input type="text" id="signup-email" placeholder="Email / ID">
-            <input type="password" id="signup-pass" placeholder="Create Password">
-            <button class="btn-primary" onclick="handleSignup()" style="background-color: #2f855a;">Register</button>
+        <div id="screen-student" class="hidden">
+            <button class="back-btn" onclick="goBack()">< Back</button>
+            
+            <div class="tabs">
+                <div class="tab active" id="tab-login" onclick="switchTab('login')">Login</div>
+                <div class="tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</div>
+            </div>
+
+            <div id="student-login-form">
+                <input type="email" id="stu-login-email" placeholder="Student Email">
+                <input type="password" id="stu-login-pass" placeholder="Password">
+                <div id="stu-login-error" class="error-msg"></div>
+                <button class="btn btn-primary" onclick="handleStudentLogin()">Login</button>
+                <div style="text-align:center; margin:15px 0; color:#9ca3af; font-size:0.8rem;">OR</div>
+                <button class="btn btn-google" onclick="handleGoogleLogin()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
+                    Continue with Google
+                </button>
+            </div>
+
+            <div id="student-signup-form" class="hidden">
+                <div id="google-alert" class="hidden" style="background:#d1fae5; color:#065f46; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.85rem;">
+                    ✅ Verified via Google. Please complete your profile.
+                </div>
+
+                <input type="text" id="stu-name" placeholder="Full Name">
+                <input type="text" id="stu-reg-id" placeholder="Registration ID (e.g. 2023CA01)">
+                <input type="email" id="stu-email" placeholder="College Email">
+                
+                <div id="password-section">
+                    <input type="password" id="stu-pass" placeholder="Create Password">
+                    <input type="password" id="stu-confirm-pass" placeholder="Confirm Password">
+                </div>
+                
+                <div id="stu-signup-error" class="error-msg"></div>
+                
+                <button id="btn-register" class="btn btn-primary" style="background:#059669;" onclick="handleStudentSignup()">Create Account</button>
+            </div>
         </div>
+
     </div>
 
-    <script src="data.js"></script>
-    <script>
-        // Toggle Logic
-        function showLogin() {
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('signup-form').classList.add('hidden');
-            document.querySelectorAll('.toggle-btn')[0].classList.add('active');
-            document.querySelectorAll('.toggle-btn')[1].classList.remove('active');
-        }
-        function showSignup() {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('signup-form').classList.remove('hidden');
-            document.querySelectorAll('.toggle-btn')[0].classList.remove('active');
-            document.querySelectorAll('.toggle-btn')[1].classList.add('active');
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, updateProfile } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } 
+            from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Action Logic
-        async function handleSignup() {
-            const role = document.getElementById('signup-role').value;
-            const email = document.getElementById('signup-email').value;
-            const pass = document.getElementById('signup-pass').value;
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_HB6QXbdv5z6zKXIkU18nw7k9NFOmZ5s",
+            authDomain: "mnnit-devjam.firebaseapp.com",
+            projectId: "mnnit-devjam",
+            storageBucket: "mnnit-devjam.firebasestorage.app",
+            messagingSenderId: "860519154056",
+            appId: "1:860519154056:web:1f848fba6723b04419fa3d"
+        };
 
-            if(!email || !pass) return alert("Fill all fields");
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
 
-            const res = await registerUser(email, pass, role);
-            if(res.success) {
-                alert("Registration Successful! Please Login.");
-                showLogin();
-            } else {
-                alert(res.message);
+        // Flag to track if we are finishing a Google Signup
+        let isGoogleSignup = false;
+        let googleUserCache = null;
+
+        // === 1. GOOGLE LOGIN (THE SMART FLOW) ===
+        window.handleGoogleLogin = async function() {
+            try {
+                // Step 1: Trigger Popup
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+
+                // Step 2: Check Database
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    // SCENARIO A: EXISTING USER -> Redirect Immediately
+                    saveAndRedirect(user, 'student');
+                } else {
+                    // SCENARIO B: NEW USER -> Go to Signup Form & Pre-fill
+                    googleUserCache = user;
+                    isGoogleSignup = true;
+
+                    // Switch to Signup Tab
+                    switchTab('signup');
+                    
+                    // Pre-fill Data
+                    document.getElementById('stu-name').value = user.displayName;
+                    document.getElementById('stu-email').value = user.email;
+                    
+                    // Lock Email Field (Can't change verified email)
+                    document.getElementById('stu-email').disabled = true;
+
+                    // Hide Password Fields (Not needed for Google Auth)
+                    document.getElementById('password-section').style.display = 'none';
+
+                    // Show Alert
+                    document.getElementById('google-alert').classList.remove('hidden');
+                    
+                    // Update Button Text
+                    document.getElementById('btn-register').innerText = "Complete Profile";
+                }
+
+            } catch (err) {
+                alert("Google Login Error: " + err.message);
             }
         }
 
-        async function handleLogin() {
-            const role = document.getElementById('login-role').value;
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-
-            const res = await loginUser(email, pass, role);
+        // === 2. STUDENT SIGNUP HANDLER (Handles Both Normal & Google) ===
+        window.handleStudentSignup = async function() {
+            const name = document.getElementById('stu-name').value;
+            const regId = document.getElementById('stu-reg-id').value;
+            const email = document.getElementById('stu-email').value;
+            const errorDiv = document.getElementById('stu-signup-error');
             
-            if(res.success) {
-                // Redirect based on role
-                if(role === 'student') window.location.href = 'student.html';
-                else window.location.href = 'admin.html';
+            if(!name || !regId || !email) { showError(errorDiv, "All fields required"); return; }
+
+            try {
+                let user;
+
+                if (isGoogleSignup) {
+                    // === GOOGLE PATH ===
+                    // User is already auth'd via Google, we just need to save data
+                    user = googleUserCache;
+                    
+                    // Save to DB
+                    await setDoc(doc(db, "users", user.uid), {
+                        fullName: name,
+                        registrationId: regId,
+                        email: email,
+                        role: "student"
+                    });
+
+                } else {
+                    // === NORMAL PATH ===
+                    const pass = document.getElementById('stu-pass').value;
+                    const confirm = document.getElementById('stu-confirm-pass').value;
+
+                    if(!pass || !confirm) { showError(errorDiv, "Password required"); return; }
+                    if(pass !== confirm) { showError(errorDiv, "Passwords do not match"); return; }
+
+                    // Create Auth
+                    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                    user = cred.user;
+                    await updateProfile(user, { displayName: name });
+
+                    // Save to DB
+                    await setDoc(doc(db, "users", user.uid), {
+                        fullName: name,
+                        registrationId: regId,
+                        email: email,
+                        role: "student"
+                    });
+                }
+
+                alert("Registration Successful!");
+                saveAndRedirect(user, 'student');
+
+            } catch (err) {
+                showError(errorDiv, err.message);
+            }
+        }
+
+        // === 3. STUDENT LOGIN (Email/Pass) ===
+        window.handleStudentLogin = async function() {
+            const email = document.getElementById('stu-login-email').value;
+            const pass = document.getElementById('stu-login-pass').value;
+            const errorDiv = document.getElementById('stu-login-error');
+
+            try {
+                const cred = await signInWithEmailAndPassword(auth, email, pass);
+                saveAndRedirect(cred.user, 'student');
+            } catch (err) {
+                showError(errorDiv, "Invalid Credentials");
+            }
+        }
+
+        // === 4. ADMIN LOGIN ===
+        window.handleAdminLogin = async function() {
+            const email = document.getElementById('admin-email').value;
+            const pass = document.getElementById('admin-pass').value;
+            const errorDiv = document.getElementById('admin-error');
+
+            if(!email || !pass) { showError(errorDiv, "Fill all fields"); return; }
+
+            try {
+                const cred = await signInWithEmailAndPassword(auth, email, pass);
+                const user = cred.user;
+
+                // Check Role in DB
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                
+                if (docSnap.exists() && docSnap.data().role === "admin") {
+                    saveAndRedirect(user, 'admin');
+                } else {
+                    await signOut(auth);
+                    showError(errorDiv, "Access Denied. Not an Admin.");
+                }
+            } catch (err) {
+                showError(errorDiv, "Login Failed: " + err.message);
+            }
+        }
+
+        // === UTILS ===
+        function saveAndRedirect(user, role) {
+            const sessionData = { email: user.email, role: role, uid: user.uid };
+            localStorage.setItem('mnnit_current_user', JSON.stringify(sessionData));
+            if(role === 'admin') window.location.href = 'admin.html';
+            else window.location.href = 'student.html';
+        }
+
+        function showError(element, msg) {
+            element.style.display = 'block';
+            element.innerText = msg;
+        }
+
+        // === UI NAVIGATION ===
+        window.selectRole = function(role) {
+            document.getElementById('screen-selection').classList.add('hidden');
+            if(role === 'admin') document.getElementById('screen-admin').classList.remove('hidden');
+            else document.getElementById('screen-student').classList.remove('hidden');
+        }
+
+        window.goBack = function() {
+            document.getElementById('screen-admin').classList.add('hidden');
+            document.getElementById('screen-student').classList.add('hidden');
+            document.getElementById('screen-selection').classList.remove('hidden');
+            
+            // Reset Forms
+            isGoogleSignup = false;
+            document.getElementById('password-section').style.display = 'block';
+            document.getElementById('google-alert').classList.add('hidden');
+            document.getElementById('stu-email').disabled = false;
+            document.getElementById('btn-register').innerText = "Create Account";
+        }
+
+        window.switchTab = function(tab) {
+            // UI Toggle
+            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+
+            if(tab === 'login') {
+                document.getElementById('student-login-form').classList.remove('hidden');
+                document.getElementById('student-signup-form').classList.add('hidden');
             } else {
-                alert(res.message);
+                document.getElementById('student-login-form').classList.add('hidden');
+                document.getElementById('student-signup-form').classList.remove('hidden');
             }
         }
     </script>
