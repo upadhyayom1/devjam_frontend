@@ -42,9 +42,26 @@
         /* MAP HEIGHT */
         #map { height: 100%; width: 100%; border-radius: 1.5rem; }
 
-        /* === 🛑 POPUP BLOCKER (CSS) === */
-        .gm-err-container { display: none !important; }
-        .gm-style-pbc { opacity: 0 !important; }
+        /* NOTIFICATION DOT */
+        @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
+        .animate-ping-slow { animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+
+        /* STAR RATING HOVER */
+        .star-rating button:hover,
+        .star-rating button:hover ~ button { color: #e2e8f0 !important; } /* Reset */
+        .star-rating:hover button { color: #fbbf24; } /* Fill on hover parent */
+        .star-rating button:hover ~ button { color: #cbd5e1 !important; } /* Grey out after hover */
+
+        /* AVATAR BADGE */
+        .avatar-container { position: relative; display: inline-block; }
+        .avatar-badge-mini {
+            position: absolute; bottom: -2px; right: -4px; width: 18px; height: 18px;
+            background: white; border-radius: 50%; border: 2px solid #f1f5f9;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;
+        }
+        body.dark-mode .avatar-badge-mini { background: #1e293b; border-color: #334155; }
+        .gm-err-container { display: none !important; } .gm-style-pbc { opacity: 0 !important; }
     </style>
 </head>
 <body class="bg-slate-50 flex h-screen overflow-hidden text-slate-900">
@@ -52,7 +69,7 @@
     <aside class="w-72 bg-slate-900 text-white flex flex-col hidden md:flex border-r border-slate-800">
         <div class="p-8 text-2xl font-black flex items-center gap-3 border-b border-slate-800">
             <div class="bg-blue-500 p-2.5 rounded-xl"><i class="fas fa-landmark text-white text-sm"></i></div>
-            <span class="tracking-tighter">CivicConnect</span>
+            <span class="tracking-tighter">MNNITConnect</span>
         </div>
         <div class="px-6 pt-6">
             <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-lg">
@@ -73,6 +90,9 @@
             <button onclick="showPage('feed')" id="nav-feed" class="nav-link flex items-center gap-4 p-4 w-full rounded-2xl font-semibold text-slate-400">
                 <i class="fas fa-stream w-5"></i> Campus Feed
             </button>
+            <button onclick="showPage('reposts')" id="nav-reposts" class="nav-link flex items-center gap-4 p-4 w-full rounded-2xl font-semibold text-slate-400">
+                <i class="fas fa-retweet w-5"></i> My Reposts
+            </button>
             <button onclick="showPage('history')" id="nav-history" class="nav-link flex items-center gap-4 p-4 w-full rounded-2xl font-semibold text-slate-400">
                 <i class="fas fa-history w-5"></i> My History
             </button>
@@ -88,18 +108,36 @@
                 <h1 class="text-xl font-extrabold" id="header-title">Student Dashboard</h1>
                 <p class="text-[11px] font-bold text-blue-500 uppercase tracking-widest" id="header-reg">Loading...</p>
             </div>
-            <div class="relative">
-                <button onclick="toggleProfileMenu()" class="flex items-center gap-4 hover:bg-slate-100 p-2 rounded-2xl transition-all">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-sm font-black display-name">Student</p>
+            
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <button id="notif-btn" onclick="toggleNotifications()" class="p-3 hover:bg-slate-100 rounded-2xl transition-all relative group">
+                        <i class="fas fa-bell text-slate-600 text-xl"></i>
+                        <span id="notif-dot" class="absolute top-2 right-2 flex h-3 w-3 hidden">
+                          <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500 border-2 border-white"></span>
+                        </span>
+                    </button>
+                    <div id="notif-menu" class="hidden absolute right-0 mt-3 w-80 bg-white rounded-[1.5rem] shadow-2xl border border-slate-100 py-2 z-50 max-h-96 overflow-y-auto">
+                        <div class="px-5 py-3 border-b border-slate-50"><span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Recent Updates</span></div>
+                        <div id="notif-list" class="p-2 space-y-1"><p class="text-center text-xs text-slate-400 py-4">No new notifications</p></div>
                     </div>
-                    <img src="" class="w-12 h-12 rounded-2xl shadow-md border-2 border-white display-avatar object-cover">
-                </button>
-                <div id="profile-menu" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-[1.5rem] shadow-2xl border py-3 z-50">
-                    <button onclick="showPage('profile')" class="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-slate-600 hover:bg-blue-50 rounded-xl"><i class="fas fa-user-circle"></i> Edit Profile</button>
-                    <button onclick="toggleSettingsModal()" class="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-slate-600 hover:bg-blue-50 rounded-xl"><i class="fas fa-cog"></i> Settings</button>
-                    <hr class="my-2 border-slate-200">
-                    <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                </div>
+
+                <div class="relative">
+                    <button id="profile-btn" onclick="toggleProfileMenu()" class="flex items-center gap-4 hover:bg-slate-100 p-2 rounded-2xl transition-all">
+                        <div class="text-right hidden sm:block"><p class="text-sm font-black display-name">Student</p></div>
+                        <div class="avatar-container">
+                            <img id="header-avatar" src="" class="w-12 h-12 rounded-2xl shadow-md border-2 border-white display-avatar object-cover">
+                            <div class="avatar-badge-mini" id="header-badge">🐣</div>
+                        </div>
+                    </button>
+                    <div id="profile-menu" class="hidden absolute right-0 mt-3 w-64 bg-white rounded-[1.5rem] shadow-2xl border py-3 z-50">
+                        <button onclick="showPage('profile')" class="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-slate-600 hover:bg-blue-50 rounded-xl"><i class="fas fa-user-circle"></i> Edit Profile</button>
+                        <button onclick="toggleSettingsModal()" class="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-slate-600 hover:bg-blue-50 rounded-xl"><i class="fas fa-cog"></i> Settings</button>
+                        <hr class="my-2 border-slate-200">
+                        <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-6 py-3 text-sm font-bold text-red-500 hover:bg-red-50 rounded-xl"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                    </div>
                 </div>
             </div>
         </header>
@@ -108,7 +146,6 @@
             
             <section id="dashboard-page" class="page-section active">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    
                     <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-50 flex flex-col justify-between">
                         <div>
                             <h2 class="text-2xl font-black mb-6">Quick Report</h2>
@@ -118,30 +155,23 @@
                                     <option>Hostel</option><option>Academic</option><option>Infrastructure</option><option>Cleanliness</option>
                                 </select>
                                 <textarea id="comp-desc" required placeholder="Description & Location" class="w-full px-5 py-4 bg-slate-50 border rounded-2xl"></textarea>
-                                
+                                <div class="flex items-center justify-between bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                    <div><span class="text-xs font-bold text-slate-700 block"><i class="fas fa-lock text-slate-400 mr-1"></i> Private Report?</span><span class="text-[9px] text-slate-400">Only visible to Admin & You</span></div>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="comp-private" class="sr-only peer"><div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-800"></div></label>
+                                </div>
                                 <div id="image-upload-area" class="w-full py-6 border-2 border-dashed rounded-2xl text-center cursor-pointer hover:bg-slate-50 transition">
-                                    <i class="fas fa-image text-slate-300 text-3xl mb-2"></i>
-                                    <p class="text-[10px] font-bold text-slate-500">UPLOAD PHOTO</p>
-                                    <input type="file" id="comp-image" accept="image/*" class="hidden">
-                                    <img id="image-preview" class="hidden mt-4 max-h-24 mx-auto rounded-xl object-cover">
+                                    <i class="fas fa-image text-slate-300 text-3xl mb-2"></i><p class="text-[10px] font-bold text-slate-500">UPLOAD PHOTO</p><input type="file" id="comp-image" accept="image/*" class="hidden"><img id="image-preview" class="hidden mt-4 max-h-24 mx-auto rounded-xl object-cover">
                                 </div>
                                 <button type="submit" id="btn-submit-report" class="w-full bg-slate-900 text-white font-black py-4 rounded-2xl shadow-lg hover:bg-blue-600 transition-all mt-4">Submit Report</button>
                             </form>
                         </div>
                     </div>
-
                     <div class="bg-white p-4 rounded-[2.5rem] shadow-xl border border-slate-50 h-[700px] relative overflow-hidden">
-                        <div class="absolute top-6 left-8 z-10 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-md border border-slate-100">
-                            <h2 class="text-sm font-black text-slate-800">📍 Drag marker to location</h2>
-                        </div>
+                        <div class="absolute top-6 left-8 z-10 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-md border border-slate-100"><h2 class="text-sm font-black text-slate-800">📍 Drag marker to location</h2></div>
                         <div id="map" class="w-full h-full rounded-[2rem] bg-slate-200"></div>
                     </div>
                 </div>
-
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-50 mt-8">
-                    <h2 class="text-2xl font-black mb-8">Live Campus Stats</h2>
-                    <div class="h-64"><canvas id="resolvedIssuesChart"></canvas></div>
-                </div>
+                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-50 mt-8"><h2 class="text-2xl font-black mb-8">Live Campus Stats</h2><div class="h-64"><canvas id="resolvedIssuesChart"></canvas></div></div>
             </section>
 
             <section id="profile-page" class="page-section">
@@ -166,10 +196,7 @@
                         </div>
                     </div>
                     <form id="profile-edit-form">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold">Personal Details</h3>
-                            <button type="submit" id="btn-save-profile" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition">Save Changes</button>
-                        </div>
+                        <div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold">Personal Details</h3><button type="submit" id="btn-save-profile" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition">Save Changes</button></div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-2"><label class="text-[10px] font-black text-slate-400 uppercase">Full Name (Locked)</label><input type="text" id="edit-name" disabled class="w-full px-5 py-3 bg-slate-100 border rounded-xl font-bold text-slate-500 cursor-not-allowed"></div>
                             <div class="space-y-2"><label class="text-[10px] font-black text-slate-400 uppercase">Registration ID (Locked)</label><input type="text" id="edit-reg" disabled class="w-full px-5 py-3 bg-slate-100 border rounded-xl font-bold text-slate-500 cursor-not-allowed"></div>
@@ -180,11 +207,17 @@
                         </div>
                     </form>
                     <h3 class="text-xl font-bold mt-10 mb-4">Badges Collection</h3>
-                    <div id="badges-container" class="flex flex-wrap gap-4 p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300"><span class="text-slate-400 text-sm italic">Start reporting issues to unlock badges!</span></div>
+                    <div id="badges-container" class="flex flex-wrap gap-4 p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-300"></div>
                 </div>
             </section>
 
             <section id="feed-page" class="page-section"><div id="feed-container" class="space-y-6"></div></section>
+            
+            <section id="reposts-page" class="page-section">
+                <h2 class="text-2xl font-black mb-6 text-slate-800">My Reposted Issues</h2>
+                <div id="reposts-container" class="space-y-6"></div>
+            </section>
+
             <section id="history-page" class="page-section"><div id="history-container" class="space-y-4"></div></section>
         </div>
     </main>
@@ -196,10 +229,7 @@
             <div class="space-y-6">
                 <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border">
                     <div class="flex items-center gap-3"><div class="bg-slate-200 p-2 rounded-lg text-slate-600"><i class="fas fa-moon"></i></div><span class="font-bold text-sm">Dark Mode</span></div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="dark-mode-toggle" class="sr-only peer" onchange="toggleDarkMode()">
-                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    </label>
+                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="dark-mode-toggle" class="sr-only peer" onchange="toggleDarkMode()"><div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div></label>
                 </div>
                 <p class="text-xs text-center text-slate-400 mt-4">Version 1.0.0 • Civic Connect</p>
             </div>
@@ -241,46 +271,18 @@
             localStorage.setItem('mnnit_theme', isDark ? 'dark' : 'light');
         }
 
-        // GOOGLE MAP INIT
         window.initMap = function() {
-            console.log("Map Initializing...");
             const mnnitCenter = { lat: 25.4913, lng: 81.8667 };
             const MNNIT_BOUNDS = { north: 25.5050, south: 25.4800, west: 81.8550, east: 81.8800 };
-            
             try {
                 map = new google.maps.Map(document.getElementById("map"), {
-                    zoom: 16, 
-                    center: mnnitCenter, 
-                    streetViewControl: false, 
-                    mapTypeControl: false,
-                    restriction: { latLngBounds: MNNIT_BOUNDS, strictBounds: false }, 
-                    minZoom: 15, 
-                    maxZoom: 20
+                    zoom: 16, center: mnnitCenter, streetViewControl: false, mapTypeControl: false,
+                    restriction: { latLngBounds: MNNIT_BOUNDS, strictBounds: false }, minZoom: 15, maxZoom: 20
                 });
-                
-                marker = new google.maps.Marker({ 
-                    position: mnnitCenter, 
-                    map: map, 
-                    draggable: true,
-                    title: "Drag me!"
-                });
-                
-                marker.addListener("dragend", (e) => { 
-                    currentLat = e.latLng.lat(); 
-                    currentLng = e.latLng.lng(); 
-                    console.log("Loc:", currentLat, currentLng);
-                });
-                
-                map.addListener("click", (e) => { 
-                    marker.setPosition(e.latLng); 
-                    currentLat = e.latLng.lat(); 
-                    currentLng = e.latLng.lng(); 
-                });
-                
-            } catch(e) {
-                console.error("Map Error:", e);
-                document.getElementById('map').innerHTML = `<p class="text-center text-red-500 pt-10">Map Error. Check API Key Billing.</p>`;
-            }
+                marker = new google.maps.Marker({ position: mnnitCenter, map: map, draggable: true, title: "Drag me!" });
+                marker.addListener("dragend", (e) => { currentLat = e.latLng.lat(); currentLng = e.latLng.lng(); });
+                map.addListener("click", (e) => { marker.setPosition(e.latLng); currentLat = e.latLng.lat(); currentLng = e.latLng.lng(); });
+            } catch(e) { console.error("Map Error:", e); }
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -293,53 +295,71 @@
 
             try {
                 const docSnap = await getDoc(doc(db, "users", currentUser.uid));
-                if (docSnap.exists()) { userProfile = docSnap.data(); updateUI(userProfile); }
+                if (docSnap.exists()) { 
+                    userProfile = docSnap.data(); 
+                    updateUI(userProfile);
+                    checkNotifications();
+                }
             } catch (err) { console.error(err); }
             fetchChartData();
         });
+
+        window.toggleNotifications = function() {
+            const menu = document.getElementById('notif-menu');
+            const dot = document.getElementById('notif-dot');
+            menu.classList.toggle('hidden');
+            if (!menu.classList.contains('hidden')) {
+                dot.classList.add('hidden');
+                localStorage.setItem('mnnit_last_resolved_count', document.getElementById('notif-list').querySelectorAll('div').length);
+            }
+        }
+
+        async function checkNotifications() {
+            const list = document.getElementById('notif-list');
+            const dot = document.getElementById('notif-dot');
+            const q = query(collection(db, "issues"), where("studentId", "==", currentUser.uid), where("status", "==", "Resolved"));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) { list.innerHTML = `<p class="text-center text-xs text-slate-400 py-4">No resolved issues.</p>`; return; }
+            list.innerHTML = ""; let count = 0;
+            snapshot.forEach(doc => {
+                const r = doc.data(); count++;
+                list.innerHTML += `<div class="px-4 py-3 hover:bg-slate-50 transition border-b border-slate-50 cursor-pointer" onclick="showPage('history')"><div class="flex items-start gap-3"><div class="bg-emerald-100 p-1.5 rounded-full text-emerald-600"><i class="fas fa-check text-xs"></i></div><div><p class="text-xs font-bold text-slate-700">Issue Resolved!</p><p class="text-[10px] text-slate-500 line-clamp-1">"${r.title}" fixed.</p></div></div></div>`;
+            });
+            const lastSeen = parseInt(localStorage.getItem('mnnit_last_resolved_count') || "0");
+            if (count > lastSeen) dot.classList.remove('hidden');
+        }
 
         function updateUI(profile) {
             const name = profile.fullName || "Student";
             const reg = profile.registrationId || "Unknown";
             const points = profile.points || 0;
             const reportCount = profile.reportCount || 0;
-
             document.querySelectorAll('.display-name').forEach(el => el.innerText = name);
-            document.getElementById('header-reg').innerText = `${reg} • STUDENT`;
-            document.getElementById('prof-reg-display').innerText = `Reg No: ${reg}`;
-            
             const avatarUrl = profile.profilePic || `https://ui-avatars.com/api/?name=${name}&background=020617&color=fff&bold=true`;
             document.querySelectorAll('.display-avatar').forEach(img => img.src = avatarUrl);
+            document.getElementById('header-avatar').src = avatarUrl;
             document.getElementById('profile-avatar-big').src = avatarUrl;
-
             document.getElementById('sidebar-points').innerText = points;
             document.getElementById('prof-karma').innerText = points;
             document.getElementById('prof-reports').innerText = reportCount;
-
             document.getElementById('edit-name').value = name;
             document.getElementById('edit-reg').value = reg;
             document.getElementById('edit-branch').value = profile.branch || "";
             document.getElementById('edit-year').value = profile.year || "";
             document.getElementById('edit-gender').value = profile.gender || "";
             document.getElementById('edit-mobile').value = profile.mobile || "";
-
             let level="Rookie", badgeIcon="🐣", progress="10%";
             if(points>=50) { level="Scout"; badgeIcon="🦅"; progress="33%"; }
             if(points>=150) { level="Guardian"; badgeIcon="🛡️"; progress="66%"; }
             if(points>=500) { level="Legend"; badgeIcon="👑"; progress="100%"; }
-
             document.getElementById('sidebar-level').innerText = level;
             document.getElementById('sidebar-progress').style.width = progress;
-            const badgeEl = document.getElementById('avatar-badge');
-            if(badgeEl) badgeEl.innerHTML = badgeIcon;
+            document.getElementById('avatar-badge').innerText = badgeIcon;
+            document.getElementById('header-badge').innerText = badgeIcon;
+        }
 
-            const badgeContainer = document.getElementById('badges-container');
-            let badgeHTML = "";
-            if (points >= 10) badgeHTML += `<span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-bold border border-blue-200">🐣 First Steps</span>`;
-            if (points >= 50) badgeHTML += `<span class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded-full text-xs font-bold border border-yellow-200">🦅 Eagle Eye</span>`;
-            if (reportCount >= 5) badgeHTML += `<span class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold border border-green-200">🧹 Green Warrior</span>`;
-            if (badgeHTML) badgeContainer.innerHTML = badgeHTML;
-            document.getElementById('prof-badges-count').innerText = badgeContainer.children.length;
+        function getBadgeIcon(p) {
+            if(p>=500) return '👑'; if(p>=150) return '🛡️'; if(p>=50) return '🦅'; return '🐣';
         }
 
         function compressImage(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const canvas = document.createElement('canvas'); const maxWidth = 800; const scale = maxWidth/img.width; canvas.width = maxWidth; canvas.height = img.height*scale; canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height); resolve(canvas.toDataURL('image/jpeg', 0.7)); }; }; }); }
@@ -348,73 +368,217 @@
 
         document.getElementById('image-upload-area').onclick = () => document.getElementById('comp-image').click();
         document.getElementById('comp-image').onchange = async (e) => { currentUploadedImage = await compressImage(e.target.files[0]); document.getElementById('image-preview').src = currentUploadedImage; document.getElementById('image-preview').classList.remove('hidden'); };
-        document.getElementById('complaintForm').onsubmit = async (e) => { e.preventDefault(); if(!currentUploadedImage) return alert("Photo required!"); const btn = document.getElementById('btn-submit-report'); btn.innerText = "Posting..."; btn.disabled = true; try { await addDoc(collection(db, "issues"), { studentId: currentUser.uid, studentName: userProfile?.fullName||"Student", title: document.getElementById('comp-title').value, category: document.getElementById('comp-category').value, description: document.getElementById('comp-desc').value, imageUrl: currentUploadedImage, locationLat: currentLat, locationLng: currentLng, status: "Pending", upvotedBy: [], downvotedBy: [], timestamp: serverTimestamp(), dateDisplay: new Date().toLocaleDateString() }); await updateDoc(doc(db, "users", currentUser.uid), { points: increment(10), reportCount: increment(1) }); alert("Posted! +10 Karma"); document.getElementById('complaintForm').reset(); document.getElementById('image-preview').classList.add('hidden'); currentUploadedImage = null; updateUI((await getDoc(doc(db, "users", currentUser.uid))).data()); showPage('feed'); fetchChartData(); } catch(e){ alert(e.message); } finally { btn.innerText = "Submit Report"; btn.disabled = false; } };
+        
+        document.getElementById('complaintForm').onsubmit = async (e) => { 
+            e.preventDefault(); if(!currentUploadedImage) return alert("Photo required!"); 
+            const btn = document.getElementById('btn-submit-report'); const isPrivate = document.getElementById('comp-private').checked;
+            btn.innerText = "Posting..."; btn.disabled = true; 
+            try { 
+                const freshUser = (await getDoc(doc(db, "users", currentUser.uid))).data();
+                await addDoc(collection(db, "issues"), { 
+                    studentId: currentUser.uid, studentName: freshUser.fullName||"Student", 
+                    authorPic: freshUser.profilePic || null, authorBadge: getBadgeIcon(freshUser.points || 0), 
+                    title: document.getElementById('comp-title').value, category: document.getElementById('comp-category').value, description: document.getElementById('comp-desc').value, imageUrl: currentUploadedImage, locationLat: currentLat, locationLng: currentLng, status: "Pending", isPrivate: isPrivate, 
+                    repostedBy: [], 
+                    upvotedBy: [], downvotedBy: [], timestamp: serverTimestamp(), dateDisplay: new Date().toLocaleDateString() 
+                }); 
+                await updateDoc(doc(db, "users", currentUser.uid), { points: increment(10), reportCount: increment(1) }); 
+                alert("Posted! +10 Karma"); document.getElementById('complaintForm').reset(); document.getElementById('image-preview').classList.add('hidden'); currentUploadedImage = null; 
+                userProfile = (await getDoc(doc(db, "users", currentUser.uid))).data(); updateUI(userProfile); showPage('feed'); fetchChartData(); 
+            } catch(e){ alert(e.message); } finally { btn.innerText = "Submit Report"; btn.disabled = false; } 
+        };
+
+        window.handleRepost = async function(docId) {
+            const ref = doc(db, "issues", docId);
+            const d = (await getDoc(ref)).data();
+            const u = currentUser.uid;
+            let update = d.repostedBy?.includes(u) ? { repostedBy: arrayRemove(u) } : { repostedBy: arrayUnion(u) };
+            await updateDoc(ref, update);
+            renderFeed();
+        }
 
         async function renderFeed() {
             const container = document.getElementById('feed-container'); container.innerHTML = '<p class="text-center text-slate-400">Loading feed...</p>';
-            try { const q = query(collection(db, "issues"), orderBy("timestamp", "desc")); const s = await getDocs(q); container.innerHTML = "";
-            s.forEach(docSnap => { const r = docSnap.data(); const docId = docSnap.id; const score = (r.upvotedBy?.length || 0) - (r.downvotedBy?.length || 0); const isUp = r.upvotedBy?.includes(currentUser.uid), isDown = r.downvotedBy?.includes(currentUser.uid);
-            
-            // RESOLUTION HTML LOGIC
-            let resolutionHTML = "";
-            if (r.status === "Resolved" && r.fixedImageUrl) {
-                resolutionHTML = `
-                    <div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <p class="text-xs font-bold text-emerald-600 mb-2 flex items-center gap-2"><i class="fas fa-check-circle"></i> Resolution Proof (After)</p>
-                        <img src="${r.fixedImageUrl}" class="w-full h-48 object-cover rounded-lg shadow-sm border border-emerald-200">
-                    </div>`;
-            }
+            try { 
+                const q = query(collection(db, "issues"), orderBy("timestamp", "desc")); const s = await getDocs(q); container.innerHTML = "";
+                s.forEach(docSnap => { 
+                    const r = docSnap.data(); if(r.isPrivate) return; 
+                    const docId = docSnap.id; 
+                    const score = (r.upvotedBy?.length || 0) - (r.downvotedBy?.length || 0); 
+                    const isUp = r.upvotedBy?.includes(currentUser.uid), isDown = r.downvotedBy?.includes(currentUser.uid);
+                    
+                    const repostCount = r.repostedBy ? r.repostedBy.length : 0;
+                    const isReposted = r.repostedBy?.includes(currentUser.uid);
 
-            container.innerHTML += `
-            <div class="bg-white p-6 rounded-[2rem] border shadow-sm mb-6">
-                <div class="flex justify-between items-start mb-4"><div><span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">${r.category}</span><h3 class="text-lg font-bold mt-2">${r.title}</h3></div><span class="text-[10px] font-bold text-slate-400">${r.dateDisplay}</span></div>
-                <p class="text-sm text-slate-600 mb-3 leading-relaxed">${r.description}</p>
-                
-                <div class="relative">
-                    <span class="absolute top-2 left-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded backdrop-blur-sm font-bold">REPORTED ISSUE</span>
-                    <img src="${r.imageUrl}" class="w-full h-56 object-cover rounded-2xl mb-4 bg-slate-100 border">
-                </div>
+                    let displayPic = r.authorPic; let displayBadge = r.authorBadge;
+                    if (r.studentId === currentUser.uid) { displayPic = userProfile.profilePic; displayBadge = getBadgeIcon(userProfile.points || 0); }
+                    const finalAvatar = displayPic || `https://ui-avatars.com/api/?name=${r.studentName}&background=f1f5f9&color=64748b&bold=true`;
+                    const finalBadge = displayBadge || '🐣';
 
-                ${resolutionHTML}
-
-                <div class="flex justify-between items-center pt-2 border-t mt-2"><div class="flex items-center gap-2"><img src="https://ui-avatars.com/api/?name=${r.studentName}&background=f1f5f9&color=64748b&bold=true" class="w-6 h-6 rounded-full"><span class="text-xs font-bold text-slate-500">${r.studentName}</span></div>
-                <div class="flex items-center gap-3"><div class="flex items-center bg-slate-100 rounded-xl overflow-hidden border border-slate-200"><button class="px-3 py-2 hover:bg-slate-200 ${isUp?'text-blue-600':'text-slate-400'}" onclick="handleVote('${docId}','up')"><i class="fas fa-arrow-up"></i></button><span class="text-xs font-black w-4 text-center text-slate-700">${score}</span><button class="px-3 py-2 hover:bg-slate-200 ${isDown?'text-red-600':'text-slate-400'}" onclick="handleVote('${docId}','down')"><i class="fas fa-arrow-down"></i></button></div><button class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition" onclick="toggleComments('${docId}')"><i class="fas fa-comment-alt mr-1"></i> Discuss</button></div></div>
-                <div id="comments-${docId}" class="comments-section bg-slate-50 rounded-2xl border border-slate-200 mt-4 p-4"><div id="list-${docId}" class="space-y-4 mb-4 max-h-64 overflow-y-auto"></div><div class="flex gap-2 items-center bg-white p-2 rounded-xl border focus-within:ring-2 ring-blue-500/20 transition"><input type="text" id="input-${docId}" placeholder="Comment..." class="flex-1 px-3 py-1 text-sm outline-none bg-transparent"><button class="bg-blue-600 text-white p-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition" onclick="postComment('${docId}')"><i class="fas fa-paper-plane"></i></button></div></div></div>`; }); } catch(e){console.error(e);}
+                    let resolutionHTML = r.status === "Resolved" && r.fixedImageUrl ? `<div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-100"><p class="text-xs font-bold text-emerald-600 mb-2"><i class="fas fa-check-circle"></i> Resolution Proof (After)</p><img src="${r.fixedImageUrl}" class="w-full h-48 object-cover rounded-lg"></div>` : "";
+                    
+                    container.innerHTML += `
+                    <div class="bg-white p-6 rounded-[2rem] border shadow-sm mb-6">
+                        <div class="flex justify-between items-start mb-4"><div><span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase">${r.category}</span><h3 class="text-lg font-bold mt-2">${r.title}</h3></div><span class="text-[10px] font-bold text-slate-400">${r.dateDisplay}</span></div>
+                        <p class="text-sm text-slate-600 mb-3 leading-relaxed">${r.description}</p>
+                        <div class="relative"><img src="${r.imageUrl}" class="w-full h-56 object-cover rounded-2xl mb-4 bg-slate-100 border"></div> ${resolutionHTML}
+                        
+                        <div class="flex justify-between items-center pt-2 border-t mt-2">
+                            <div class="flex items-center gap-2">
+                                <div class="avatar-container"><img src="${finalAvatar}" class="w-8 h-8 rounded-full object-cover"><div class="avatar-badge-mini">${finalBadge}</div></div>
+                                <span class="text-xs font-bold text-slate-500">${r.studentName}</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center bg-slate-100 rounded-xl border">
+                                    <button class="px-3 py-2 ${isUp?'text-blue-600':'text-slate-400'}" onclick="handleVote('${docId}','up')"><i class="fas fa-arrow-up"></i></button>
+                                    <span class="text-xs font-bold w-4 text-center">${score}</span>
+                                    <button class="px-3 py-2 ${isDown?'text-red-600':'text-slate-400'}" onclick="handleVote('${docId}','down')"><i class="fas fa-arrow-down"></i></button>
+                                    <div class="w-px h-4 bg-slate-300 mx-1"></div>
+                                    <button class="px-3 py-2 ${isReposted?'text-green-600':'text-slate-400'} flex items-center gap-1" onclick="handleRepost('${docId}')">
+                                        <i class="fas fa-retweet"></i> <span class="text-xs">${repostCount}</span>
+                                    </button>
+                                </div>
+                                <button class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition" onclick="toggleComments('${docId}')">Discuss</button>
+                            </div>
+                        </div>
+                        <div id="comments-${docId}" class="comments-section bg-slate-50 rounded-2xl border border-slate-200 mt-4 p-4"><div id="list-${docId}" class="space-y-4 mb-4 max-h-64 overflow-y-auto"></div><div class="flex gap-2 items-center bg-white p-2 rounded-xl border focus-within:ring-2 ring-blue-500/20 transition"><input type="text" id="input-${docId}" placeholder="Comment..." class="flex-1 px-3 py-1 text-sm outline-none bg-transparent"><button class="bg-blue-600 text-white p-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition" onclick="postComment('${docId}')"><i class="fas fa-paper-plane"></i></button></div></div></div>`; }); 
+            } catch(e){console.error(e);}
         }
+
+        async function loadMyReposts() {
+            const container = document.getElementById('reposts-container');
+            container.innerHTML = '<p class="text-center text-slate-400">Loading reposts...</p>';
+            try {
+                const q = query(collection(db, "issues"), where("repostedBy", "array-contains", currentUser.uid));
+                const s = await getDocs(q);
+                if(s.empty) { container.innerHTML = `<p class="text-center text-slate-400 text-sm">You haven't reposted anything yet.</p>`; return; }
+                container.innerHTML = "";
+                s.forEach(docSnap => {
+                    const r = docSnap.data();
+                    container.innerHTML += `
+                    <div class="bg-white p-6 rounded-[2rem] border shadow-sm flex flex-col md:flex-row gap-6 mb-4">
+                        <img src="${r.imageUrl}" class="w-24 h-24 rounded-2xl object-cover bg-slate-100">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-green-100 text-green-600 text-[9px] font-bold px-2 py-1 rounded-full uppercase"><i class="fas fa-retweet"></i> Reposted</span>
+                                <span class="text-[10px] font-bold text-slate-400">${r.dateDisplay}</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800">${r.title}</h3>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">${r.description}</p>
+                            <div class="flex items-center gap-2 mt-3">
+                                <img src="https://ui-avatars.com/api/?name=${r.studentName}&background=f1f5f9" class="w-5 h-5 rounded-full">
+                                <span class="text-[10px] font-bold text-slate-400">Original by ${r.studentName}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
         window.handleVote = async function(docId, type) { const ref = doc(db, "issues", docId); const d = (await getDoc(ref)).data(); const u = currentUser.uid; let up = {}; if(type==='up') up = d.upvotedBy?.includes(u)?{upvotedBy:arrayRemove(u)}:{upvotedBy:arrayUnion(u),downvotedBy:arrayRemove(u)}; else up = d.downvotedBy?.includes(u)?{downvotedBy:arrayRemove(u)}:{downvotedBy:arrayUnion(u),upvotedBy:arrayRemove(u)}; await updateDoc(ref, up); renderFeed(); }
         window.toggleComments = (id) => { const el=document.getElementById(`comments-${id}`); if(el.classList.contains('open'))el.classList.remove('open'); else { el.classList.add('open'); loadComments(id); } };
-        async function loadComments(id) { const d = document.getElementById(`list-${id}`); d.innerHTML='Loading...'; const q = query(collection(db, "issues", id, "comments"), orderBy("timestamp", "asc")); const s = await getDocs(q); d.innerHTML=""; if(s.empty){d.innerHTML='No comments.';return;} s.forEach(c => { const dt=c.data(); const sc=(dt.upvotedBy?.length||0)-(dt.downvotedBy?.length||0); d.innerHTML += `<div class="flex gap-3"><img src="https://ui-avatars.com/api/?name=${dt.authorName}&background=cbd5e1&color=fff&size=32&bold=true" class="w-8 h-8 rounded-full"><div class="flex-1"><div class="bg-white p-3 rounded-2xl rounded-tl-none border shadow-sm inline-block"><span class="text-xs font-bold text-slate-800 block">${dt.authorName}</span><p class="text-sm text-slate-600">${dt.text}</p></div><div class="flex items-center gap-2 mt-1 ml-1"><button class="text-[10px] text-slate-400 hover:text-blue-500 font-bold" onclick="voteComment('${id}','${c.id}','up')">Upvote</button><span class="text-[10px] font-bold ${sc>0?'text-blue-500':'text-slate-400'}">${sc}</span><button class="text-[10px] text-slate-400 hover:text-red-500 font-bold" onclick="voteComment('${id}','${c.id}','down')">Downvote</button></div></div></div>`; }); }
-        window.postComment = async(id) => { const i=document.getElementById(`input-${id}`); if(!i.value.trim())return; await addDoc(collection(db,"issues",id,"comments"),{text:i.value.trim(),authorId:currentUser.uid,authorName:userProfile?.fullName||"Student",timestamp:serverTimestamp(),upvotedBy:[],downvotedBy:[]}); i.value=""; loadComments(id); };
+        async function loadComments(id) { const d = document.getElementById(`list-${id}`); d.innerHTML='Loading...'; const q = query(collection(db, "issues", id, "comments"), orderBy("timestamp", "asc")); const s = await getDocs(q); d.innerHTML=""; if(s.empty){d.innerHTML='No comments.';return;} 
+            s.forEach(c => { 
+                const dt=c.data(); 
+                // === OFFICIAL COMMENT STYLING ===
+                const isOfficial = dt.isAdmin;
+                const bubbleClass = isOfficial ? "bg-slate-800 text-white border-blue-500 border-l-4" : "bg-white text-slate-800 border-slate-100";
+                const nameClass = isOfficial ? "text-blue-400" : "text-slate-800";
+                const badge = isOfficial ? `<span class="bg-blue-600 text-[9px] text-white px-1.5 rounded ml-2">OFFICIAL</span>` : "";
+
+                // === SMART OVERRIDE FOR AVATARS ===
+                let commPic = dt.authorPic; let commBadge = dt.authorBadge;
+                if(dt.authorId === currentUser.uid && !isOfficial) { commPic = userProfile.profilePic; commBadge = getBadgeIcon(userProfile.points || 0); }
+                if(isOfficial) commPic = "https://ui-avatars.com/api/?name=CW&background=1e293b&color=fff&bold=true"; // Force Admin Avatar
+
+                const finalCommPic = commPic || `https://ui-avatars.com/api/?name=${dt.authorName}&background=cbd5e1&color=fff&size=32&bold=true`;
+                
+                d.innerHTML += `
+                <div class="flex gap-3">
+                    <div class="avatar-container"><img src="${finalCommPic}" class="w-8 h-8 rounded-full object-cover"><div class="avatar-badge-mini">${commBadge||(isOfficial?'👮':'🐣')}</div></div>
+                    <div class="flex-1">
+                        <div class="${bubbleClass} p-3 rounded-2xl shadow-sm inline-block w-full">
+                            <div class="flex items-center mb-1"><span class="text-xs font-bold ${nameClass}">${dt.authorName}</span>${badge}</div>
+                            <p class="text-sm">${dt.text}</p>
+                        </div>
+                    </div>
+                </div>`; 
+            }); 
+        }
+        
+        window.postComment = async(id) => { 
+            const i=document.getElementById(`input-${id}`); if(!i.value.trim())return; 
+            const latestUser = (await getDoc(doc(db, "users", currentUser.uid))).data();
+            await addDoc(collection(db,"issues",id,"comments"),{text:i.value.trim(),authorId:currentUser.uid,authorName:latestUser?.fullName||"Student", authorPic: latestUser.profilePic || null, authorBadge: getBadgeIcon(latestUser.points||0), timestamp:serverTimestamp(),upvotedBy:[],downvotedBy:[]}); i.value=""; loadComments(id); 
+        };
         window.voteComment = async(iId, cId, type) => { const ref=doc(db,"issues",iId,"comments",cId); const d=(await getDoc(ref)).data(); const u=currentUser.uid; let up={}; if(type==='up') up=d.upvotedBy?.includes(u)?{upvotedBy:arrayRemove(u)}:{upvotedBy:arrayUnion(u),downvotedBy:arrayRemove(u)}; else up=d.downvotedBy?.includes(u)?{downvotedBy:arrayRemove(u)}:{downvotedBy:arrayUnion(u),upvotedBy:arrayRemove(u)}; await updateDoc(ref,up); loadComments(iId); };
 
-        async function loadMyHistory() { const d = document.getElementById('history-container'); d.innerHTML='Loading...'; const q=query(collection(db,"issues"),where("studentId","==",currentUser.uid)); const s=await getDocs(q); d.innerHTML=""; if(s.empty) {d.innerHTML='No reports.';return;} s.forEach(doc=>{const r=doc.data(); d.innerHTML+=`<div class="bg-white p-6 rounded-[2rem] border shadow-sm flex gap-6 items-center"><img src="${r.imageUrl}" class="w-20 h-20 rounded-2xl object-cover bg-slate-100"><div><h3 class="text-lg font-bold">${r.title}</h3><span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${r.status==='Resolved'?'text-emerald-600 bg-emerald-100':'text-yellow-600 bg-yellow-100'}">${r.status}</span></div></div>`;}); }
+        async function loadMyHistory() { 
+            const d = document.getElementById('history-container'); d.innerHTML='Loading...';
+            const q=query(collection(db,"issues"),where("studentId","==",currentUser.uid)); const s=await getDocs(q); d.innerHTML=""; if(s.empty) {d.innerHTML='No reports.';return;}
+            s.forEach(doc=>{
+                const r=doc.data(); 
+                let privateBadge = r.isPrivate ? `<span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-1 rounded border border-gray-200"><i class="fas fa-lock"></i> Private</span>` : '';
+                
+                // RATING SYSTEM
+                let ratingHTML = "";
+                if(r.status === "Resolved") {
+                   if(r.userRating) {
+                      // Show Static Stars
+                      let stars = "";
+                      for(let i=1; i<=5; i++) stars += i <= r.userRating ? '<i class="fas fa-star text-yellow-400"></i>' : '<i class="far fa-star text-slate-300"></i>';
+                      ratingHTML = `<div class="mt-2"><div class="flex gap-1 text-xs">${stars}</div><p class="text-[9px] text-slate-400 font-bold mt-1">You Rated</p></div>`;
+                   } else {
+                      // Show Interactive Stars
+                      let stars = "";
+                      for(let i=1; i<=5; i++) stars += `<button onclick="submitRating('${doc.id}', ${i})" class="text-slate-300 hover:text-yellow-400 transition"><i class="fas fa-star"></i></button>`;
+                      ratingHTML = `<div class="mt-2"><div class="flex gap-1 text-xs star-rating">${stars}</div><p class="text-[9px] text-blue-500 font-bold mt-1 cursor-pointer">Rate Fix</p></div>`;
+                   }
+                }
+
+                d.innerHTML+=`
+                <div class="bg-white p-6 rounded-[2rem] border shadow-sm flex gap-6 items-center">
+                    <img src="${r.imageUrl}" class="w-20 h-20 rounded-2xl object-cover bg-slate-100">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <h3 class="text-lg font-bold">${r.title}</h3>
+                            ${privateBadge}
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${r.status==='Resolved'?'text-emerald-600 bg-emerald-100':'text-yellow-600 bg-yellow-100'}">${r.status}</span>
+                        ${ratingHTML}
+                    </div>
+                </div>`;
+            }); 
+        }
+
+        window.submitRating = async(docId, rating) => {
+             if(confirm(`Rate this resolution ${rating} stars?`)) {
+                 await updateDoc(doc(db, "issues", docId), { userRating: rating });
+                 loadMyHistory(); // Refresh to show locked stars
+             }
+        }
+        
         async function fetchChartData() { try { const q=query(collection(db,"issues")); const s=await getDocs(q); let h=0,a=0,i=0,c=0; s.forEach(d=>{const v=d.data().category; if(v=='Hostel')h++;if(v=='Academic')a++;if(v=='Infrastructure')i++;if(v=='Cleanliness')c++;}); renderChart([h,a,i,c]); } catch(e){console.error(e);} }
         function renderChart(d){if(issuesChart)issuesChart.destroy(); const ctx=document.getElementById('resolvedIssuesChart').getContext('2d'); issuesChart=new Chart(ctx,{type:'bar',data:{labels:['Hostel','Academic','Infra','Cleanliness'],datasets:[{label:'Reports',data:d||[0,0,0,0],backgroundColor:['#3b82f6','#8b5cf6','#f59e0b','#10b981'],borderRadius:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{display:false}},x:{grid:{display:false}}}}});}
         
         window.showPage = function(pageId) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId + '-page').classList.add('active');
-            
-            document.querySelectorAll('.nav-link').forEach(btn => {
-                btn.classList.remove('active'); 
-                btn.classList.add('text-slate-400');
-            });
-
-            const activeBtn = document.getElementById('nav-' + pageId);
-            if(activeBtn) {
-                activeBtn.classList.add('active'); 
-                activeBtn.classList.remove('text-slate-400');
-            }
-
-            document.getElementById('header-title').innerText = pageId.charAt(0).toUpperCase() + pageId.slice(1);
-            if(pageId === 'feed') renderFeed();
-            if(pageId === 'history') loadMyHistory();
-            
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active')); document.getElementById(pageId + '-page').classList.add('active'); 
+            document.querySelectorAll('.nav-link').forEach(btn => { btn.classList.remove('active'); btn.classList.add('text-slate-400'); }); const activeBtn = document.getElementById('nav-' + pageId); if(activeBtn) { activeBtn.classList.add('active'); activeBtn.classList.remove('text-slate-400'); } document.getElementById('header-title').innerText = pageId.charAt(0).toUpperCase() + pageId.slice(1); if(pageId === 'feed') renderFeed(); if(pageId === 'history') loadMyHistory(); if(pageId === 'reposts') loadMyReposts();
             if(pageId==='dashboard' && map) setTimeout(()=>{ google.maps.event.trigger(map, 'resize'); map.setCenter({ lat: 25.4913, lng: 81.8667 }); }, 500); 
         }
 
-        window.toggleProfileMenu = () => document.getElementById('profile-menu').classList.toggle('hidden'); window.toggleSettingsModal = () => document.getElementById('settings-modal').classList.toggle('hidden'); window.handleLogout = async () => { await signOut(auth); localStorage.removeItem('mnnit_current_user'); window.location.href = 'login.html'; }; window.onclick = (e) => { if(!e.target.closest('.relative') && !e.target.closest('#settings-modal')) document.getElementById('profile-menu').classList.add('hidden'); };
-        window.handleVote = handleVote; window.toggleComments = toggleComments; window.postComment = postComment; window.voteComment = voteComment;
+        window.onclick = function(e) {
+            const notifMenu = document.getElementById('notif-menu'), notifBtn = document.getElementById('notif-btn');
+            const profileMenu = document.getElementById('profile-menu'), profileBtn = document.getElementById('profile-btn');
+            const settingsModal = document.getElementById('settings-modal');
+
+            if (notifMenu && !notifMenu.contains(e.target) && !notifBtn.contains(e.target)) notifMenu.classList.add('hidden');
+            if (profileMenu && !profileMenu.contains(e.target) && !profileBtn.contains(e.target)) profileMenu.classList.add('hidden');
+            if (settingsModal && !settingsModal.classList.contains('hidden') && e.target === settingsModal) settingsModal.classList.add('hidden');
+        };
+
+        window.toggleProfileMenu = () => document.getElementById('profile-menu').classList.toggle('hidden'); window.toggleSettingsModal = () => document.getElementById('settings-modal').classList.toggle('hidden'); window.handleLogout = async () => { await signOut(auth); localStorage.removeItem('mnnit_current_user'); window.location.href = 'login.html'; }; 
+        window.handleVote = handleVote; window.toggleComments = toggleComments; window.postComment = postComment; window.voteComment = voteComment; window.handleRepost = handleRepost; window.submitRating = submitRating;
     </script>
 </body>
 </html>

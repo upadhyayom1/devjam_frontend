@@ -4,27 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MNNIT Civic Reporter</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=EB+Garamond:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* === RESET & VARIABLES === */
+        /* === VINTAGE RESET & VARIABLES === */
         :root {
-            --primary: #2563eb;       /* Modern Blue */
-            --dark: #1e293b;          /* Dark Slate */
-            --light: #f8fafc;         /* Off-white */
-            --accent: #10b981;        /* Success Green */
-            --shadow: 0 10px 30px -10px rgba(0,0,0,0.2);
+            --primary: #5d4037;    /* Deep Leather Brown */
+            --dark: #2c1e1a;       /* Aged Ink */
+            --light: #e6d5b8;      /* Aesthetic Vintage Light Brown (Warm Sepia) */
+            --accent: #8d6e63;     /* Muted Clay */
+            --card-bg: #d7c4a3;    /* Darker Pop-up Background */
+            --paper-texture: url('https://www.transparenttextures.com/patterns/natural-paper.png');
+            --shadow: 0 10px 30px -10px rgba(0,0,0,0.4);
         }
-           
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+            
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Smooth Scroll Effect */
         html { scroll-behavior: smooth; }
+        
+        body { 
+            background-color: var(--light); 
+            background-image: var(--paper-texture);
+            color: var(--dark); 
+            font-family: 'EB Garamond', serif; 
+            overflow-x: hidden; 
+        }
 
-        body { background-color: var(--light); color: var(--dark); overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
 
-        /* === NAVBAR === */
-       /* === NAVBAR === */
+        /* === NAVBAR (Vintage Parchment Style) === */
         nav {
             display: flex;
             justify-content: space-between;
@@ -33,63 +40,57 @@
             position: fixed;
             width: 100%;
             top: 0;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(230, 213, 184, 0.95);
+            background-image: var(--paper-texture);
             backdrop-filter: blur(10px);
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 2px solid rgba(93, 64, 55, 0.2);
         }
 
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
-        
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 30px;
+        .logo { 
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--dark); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
         }
 
-        .nav-link {
-            font-weight: 500;
-            color: #64748b;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-            cursor: pointer;
+        .nav-actions { display: flex; align-items: center; gap: 30px; }
+        .nav-link { 
+            font-weight: 600; 
+            color: #5d4037; 
+            font-size: 0.95rem; 
+            transition: color 0.3s; 
+            cursor: pointer; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+        .nav-link:hover { color: var(--accent); }
 
-        .nav-link:hover { color: var(--primary); }
-
-        /* --- NEW ANIMATED BUTTON STARTS HERE --- */
-        
-        /* 1. The Pulse Animation */
-        @keyframes softPulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
-        }
-
-        /* 2. The Button Styling */
         .nav-btn {
             padding: 10px 24px;
             background: var(--primary);
-            color: white;
-            border-radius: 50px;
+            color: #f4ecd8;
+            border: 1px solid #3e2723;
+            border-radius: 4px; 
+            font-family: 'Special Elite', cursive;
             font-weight: 600;
             cursor: pointer;
-            animation: softPulse 2s infinite; /* Keeps it pulsing */
             transition: all 0.3s ease;
         }
 
-        /* 3. The Hover Effect (Red) */
         .nav-btn:hover { 
-            animation: none; /* Stops pulsing on hover */
-            transform: scale(1.1); 
-            background: #ef4444; /* Turns Red */
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+            transform: scale(1.05); 
+            background: #3e2723; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         /* === HERO SECTION === */
-       .hero {
+        .hero {
             position: relative;
-            height: 90vh; /* Full screen height */
+            height: 90vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -97,166 +98,210 @@
             text-align: center;
             padding: 0 20px;
             overflow: hidden; 
-            color: white; /* Force text white */
+            color: white;
+            background-color: #1a1a1a;
         }
-        .video-bg {
+
+        .bg-video {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Ensures video fills screen without stretching */
-            z-index: -2;
-            transform: scale(1.05); /* Slight zoom to avoid white edges */
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            filter: sepia(60%) contrast(110%) brightness(80%); /* Stronger vintage filter */
         }
+
         .video-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            /* Gradient for that premium look */
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
-            z-index: -1;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(44, 30, 26, 0.5); 
+            z-index: 1;
         }
 
-      .hero h1 {
-            color: white;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.6); /* Shadow makes text pop */
-            background: none; /* Remove old gradient */
-            -webkit-text-fill-color: white;
-            
-            /* Keep your animation settings here */
-            opacity: 0;
-            animation: textReveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-            animation-delay: 0.2s;
+        .animated-title-container {
+            z-index: 2;
+            margin-bottom: 20px;
         }
-.hero p {
-            color: #f1f5f9;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-            
-            /* Keep your animation settings here */
-            opacity: 0;
-            animation: textReveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-            animation-delay: 0.5s;
+
+        #nit-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 800;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: 4px;
+            color: #e6d5b8;
         }
-.cta-btn {
-            display: inline-block; /* Fixes animation jitter */
-            padding: 16px 40px;
+
+        .letter {
+            opacity: 0;
+            display: inline-block;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes finalGlow {
+            0% { text-shadow: 0 0 10px rgba(230, 213, 184, 0.4); }
+            50% { text-shadow: 0 0 20px rgba(230, 213, 184, 0.7); transform: scale(1.02); }
+            100% { text-shadow: 0 0 10px rgba(230, 213, 184, 0.4); }
+        }
+
+        .glow-active .letter {
+            opacity: 1;
+            animation: finalGlow 3s ease-in-out infinite;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-style: italic;
+            z-index: 2;
+            color: #f4ecd8;
+        }
+
+        .hero p {
+            font-family: 'EB Garamond', serif;
+            font-size: 1.4rem;
+            max-width: 700px;
+            z-index: 2;
+            color: #e6d5b8;
+        }
+
+        .cta-btn {
+            position: relative;
+            z-index: 2;
+            background: #bfa57d;
+            color: var(--dark);
+            padding: 15px 30px;
+            border: 2px solid var(--dark);
+            font-family: 'Special Elite', cursive;
             font-size: 1.1rem;
-            background: var(--primary);
-            color: white;
-            border-radius: 8px;
-            font-weight: 600;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
             transition: all 0.3s ease;
-            
-            /* Animation Config */
-            opacity: 0; /* Start hidden */
-            animation: textReveal 1s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-            animation-delay: 1.2s; /* Appears last */
-        }
-        .cta-btn:hover { 
-            transform: translateY(-3px); 
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.4); 
+            display: inline-block;
+            margin-top: 25px;
         }
 
-        /* === LIVE TICKER === */
+        .cta-btn:hover {
+            background: var(--dark);
+            color: #f4ecd8;
+        }
+
+        /* === TICKER (Darker Pop-up Options) === */
         .ticker-container {
-            margin-top: -50px;
+            margin-top: -60px;
             display: flex;
             justify-content: center;
             padding: 0 20px;
-            animation: fadeInUp 1.4s ease-out;
-            position: relative; /* For z-index */
+            position: relative;
             z-index: 10;
         }
 
         .ticker {
-            background: white;
+            background: var(--card-bg);
+            background-image: var(--paper-texture);
             padding: 30px 60px;
-            border-radius: 20px;
+            border-radius: 8px;
             display: flex;
             gap: 60px;
             box-shadow: var(--shadow);
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 2px solid #a89474;
         }
 
         .stat-item { text-align: center; }
-        .stat-num { font-size: 2.5rem; font-weight: 800; color: var(--dark); display: block; }
-        .stat-label { color: #64748b; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .stat-num { 
+            font-family: 'Special Elite', cursive;
+            font-size: 2.8rem; 
+            font-weight: 800; 
+            color: var(--dark); 
+            display: block; 
+        }
+        .stat-label { 
+            color: #3e2723; 
+            font-size: 0.9rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-weight: 700; 
+        }
 
         /* === FEATURES SECTION === */
-        .features { padding: 100px 10%; background: white; }
-        .section-title { text-align: center; margin-bottom: 60px; font-size: 2rem; }
+        .features { 
+            padding: 100px 10%; 
+            background: transparent; 
+        }
+
+        .section-title { 
+            font-family: 'Playfair Display', serif;
+            text-align: center; 
+            margin-bottom: 60px; 
+            font-size: 2.8rem;
+            color: var(--dark);
+            text-decoration: underline;
+            text-underline-offset: 8px;
+        }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; }
         
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+        .feature-card { 
+            padding: 40px; 
+            background: var(--card-bg); 
+            background-image: var(--paper-texture);
+            border-radius: 8px; 
+            transition: all 0.4s ease; 
+            border: 1px solid #a89474;
+            box-shadow: 8px 8px 20px rgba(0,0,0,0.1);
         }
 
-        .feature-card {
-            padding: 40px;
-            background: var(--light);
-            border-radius: 16px;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
+        .feature-card:hover { 
+            background: #c9b48f; 
+            transform: translateY(-10px);
+            box-shadow: var(--shadow); 
         }
 
-        .feature-card:hover {
-            background: white;
-            box-shadow: var(--shadow);
-            transform: translateY(-5px);
-            border-color: #e2e8f0;
+        .icon { font-size: 2.5rem; margin-bottom: 20px; display: block; filter: sepia(100%) brightness(0.7); }
+        .feature-card h3 { 
+            font-family: 'Playfair Display', serif; 
+            margin-bottom: 12px; 
+            font-size: 1.6rem;
+            color: var(--dark);
+        }
+        .feature-card p { color: #3e2723; line-height: 1.6; font-size: 1.15rem; font-weight: 500; }
+
+        /* === FOOTER === */
+        .footer-section { 
+            background: #2c1e1a; 
+            background-image: var(--paper-texture);
+            color: #e6d5b8; 
+            padding: 80px 20px 40px; 
+            text-align: center; 
+            border-top: 8px solid #5d4037;
         }
 
-        .icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
-        .feature-card h3 { margin-bottom: 10px; }
-        .feature-card p { color: #64748b; line-height: 1.6; }
-
-        /* === FOOTER / CONTACT === */
-        .footer-section {
-            background: #1e293b;
-            color: white;
-            padding: 60px 20px;
-            text-align: center;
-        }
-        
-        .contact-info {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 30px;
-            margin-bottom: 40px;
+        .contact-info { display: flex; justify-content: center; gap: 50px; margin-top: 30px; margin-bottom: 40px; }
+        .contact-item { font-family: 'EB Garamond', serif; font-size: 1.2rem; }
+        .contact-item span { 
+            font-family: 'Special Elite', cursive;
+            color: #bfa57d; 
+            display: block; 
+            font-size: 0.9rem; 
+            margin-bottom: 8px; 
+            text-transform: uppercase;
         }
 
-        .contact-item { font-size: 1.1rem; }
-        .contact-item span { color: #94a3b8; display: block; font-size: 0.9rem; margin-bottom: 5px; }
-
-       /* === NEW ANIMATIONS === */
-        
-        /* The "Blur Reveal" Keyframe */
         @keyframes textReveal {
-            0% {
-                opacity: 0;
-                transform: translateY(40px); /* Starts lower down */
-                filter: blur(15px); /* Starts very blurry */
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0); /* Slides to original spot */
-                filter: blur(0); /* Becomes sharp */
-            }
+            0% { opacity: 0; transform: translateY(30px); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
-        
 
-        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .ticker { flex-direction: column; gap: 20px; width: 90%; padding: 20px; }
-            .nav-actions { gap: 15px; }
-            .nav-link { display: none; } /* Hide text links on very small screens if needed */
+            #nit-title { font-size: 2.5rem; }
+            .hero h1 { font-size: 2rem; }
+            .ticker { flex-direction: column; gap: 30px; width: 95%; padding: 30px; }
+            .nav-link { display: none; }
         }
     </style>
 </head>
@@ -264,23 +309,24 @@
 
     <nav>
         <div class="logo">🏛️ MNNIT Reporter</div>
-        
         <div class="nav-actions">
             <a href="#about-section" class="nav-link">About Us</a>
-            
             <a href="#contact-section" class="nav-link">Contact Us</a>
-            
             <a href="login.html" class="nav-btn">Login / Sign Up</a>
         </div>
     </nav>
 
-   <section class="hero">
-        <video autoplay muted loop playsinline class="video-bg" id="heroVideo">
-            <source src="video.mp4" type="video/mp4">
-            Your browser does not support HTML5 video.
+    <section class="hero">
+        <video autoplay muted loop playsinline class="bg-video">
+            <source src="video2.mp4" type="video/mp4">
+            Your browser does not support the video tag.
         </video>
 
         <div class="video-overlay"></div>
+        
+        <div class="animated-title-container">
+            <div id="nit-title"></div>
+        </div>
 
         <h1>Transform MNNIT,<br>One Report at a Time.</h1>
         <p>A student-led initiative to streamline campus maintenance. Spot it, Snap it, Solved.</p>
@@ -294,11 +340,11 @@
                 <span class="stat-label">Issues Reported</span>
             </div>
             <div class="stat-item">
-                <span class="stat-num" style="color:var(--accent)" id="stat-resolved">0</span>
+                <span class="stat-num" style="color:#5d4037" id="stat-resolved">0</span>
                 <span class="stat-label">Resolved</span>
             </div>
             <div class="stat-item">
-                <span class="stat-num" style="color:var(--primary)" id="stat-users">0</span>
+                <span class="stat-num" style="color:#2c1e1a" id="stat-users">0</span>
                 <span class="stat-label">Active Students</span>
             </div>
         </div>
@@ -310,48 +356,61 @@
             <div class="feature-card">
                 <span class="icon">📸</span>
                 <h3>Snap & Upload</h3>
-                <p>Found a broken fan or a water leak? Just take a photo and upload it. No forms, no office visits.</p>
+                <p>Found a broken fan or a water leak? Just take a photo and upload it to our digital archives.</p>
             </div>
             <div class="feature-card">
                 <span class="icon">⚡</span>
-                <h3>Instant Admin Alerts</h3>
-                <p>Your report is instantly forwarded to the MNNIT maintenance dashboard for quick action.</p>
+                <h3>Instant Dispatch</h3>
+                <p>Your report is instantly forwarded to the MNNIT maintenance ledger for immediate review.</p>
             </div>
             <div class="feature-card">
                 <span class="icon">✅</span>
                 <h3>Visual Proof</h3>
-                <p>Transparency is key. Admins upload "After" photos so you can verify the fix yourself.</p>
+                <p>Maintenance staff upload "After" photos so you can witness the restoration yourself.</p>
             </div>
         </div>
     </section>
 
     <footer id="contact-section" class="footer-section">
-        <h2 style="margin-bottom: 10px;">Get in Touch</h2>
-        <p style="color:#94a3b8;">Have questions? Reach out to the MNNIT Administration.</p>
-        
+        <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 15px; font-size: 2.2rem;">Get in Touch</h2>
         <div class="contact-info">
-            <div class="contact-item">
-                <span>Helpline Number</span>
-                📞 +91 98765 43210
-            </div>
-            <div class="contact-item">
-                <span>Official Email</span>
-                ✉️ admin@mnnit.ac.in
-            </div>
+            <div class="contact-item"><span>Helpline Number</span>📞 +91 98765 43210</div>
+            <div class="contact-item"><span>Official Email</span>✉️ admin@mnnit.ac.in</div>
         </div>
-
-        <div style="border-top: 1px solid #334155; padding-top: 20px; font-size: 0.8rem; color: #64748b;">
-            &copy; 2025 MNNIT DevJam Team. Built for Impact.
+        <div style="border-top: 1px solid rgba(230,213,184,0.1); padding-top: 30px; font-family: 'Special Elite', cursive; font-size: 0.85rem; color: #8d6e63; letter-spacing: 1px;">
+            &copy; 2025 MNNIT DevJam Team. Established for Excellence.
         </div>
     </footer>
 
     <script>
-        // Smooth Counter Animation
+        // === NIT ALLAHABAD Animation Logic ===
+        const text = "NIT ALLAHABAD";
+        const container = document.getElementById("nit-title");
+        
+        text.split("").forEach(char => {
+            const span = document.createElement("span");
+            span.textContent = char === " " ? "\u00A0" : char;
+            span.className = "letter";
+            container.appendChild(span);
+        });
+
+        const letters = document.querySelectorAll(".letter");
+        
+        letters.forEach((letter, i) => {
+            setTimeout(() => {
+                letter.style.opacity = "1";
+                if (i === letters.length - 1) {
+                    setTimeout(() => {
+                        container.classList.add("glow-active");
+                    }, 500);
+                }
+            }, i * 150);
+        });
+
         function animateCounter(id, target, duration) {
             let obj = document.getElementById(id);
             let start = 0;
-            let increment = target / (duration / 16); // 60fps
-            
+            let increment = target / (duration / 16);
             let timer = setInterval(() => {
                 start += increment;
                 obj.textContent = Math.floor(start);
@@ -362,21 +421,11 @@
             }, 16);
         }
 
-        // Run when page loads
         document.addEventListener('DOMContentLoaded', () => {
             animateCounter("stat-issues", 142, 2000);
             animateCounter("stat-resolved", 115, 2500);
             animateCounter("stat-users", 850, 1500);
-
-        });
-        // Slow Motion Video Effect
-        document.addEventListener("DOMContentLoaded", function() {
-            const video = document.getElementById('heroVideo');
-            if(video) {
-                video.playbackRate = 0.5; // Plays at 50% speed (Cinematic feel)
-            }
         });
     </script>
-
 </body>
-</html>
+</html>'
